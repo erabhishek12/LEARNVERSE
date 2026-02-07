@@ -9,7 +9,7 @@
 
 const CONFIG = {
     // Google Apps Script Web App URL (Replace with your deployed URL)
-    API_URL: 'https://script.google.com/macros/s/AKfycbwEQUAC-gdPeSfkPcFOp9hpGO0Yo-TOf3OHCreQ3TeGtsdJUImn1kX7qtqx6Dfod4nl2Q/exec',
+    API_URL: 'https://odd-poetry-8be4.erabhi186.workers.dev/',
     
     // Razorpay Key ID (Replace with your key)
     RAZORPAY_KEY: 'rzp_test_SDJVf0FkMO5XxH',
@@ -4085,6 +4085,7 @@ window.LearnVerse = {
     DemoData
 
 };
+
 
 
 
