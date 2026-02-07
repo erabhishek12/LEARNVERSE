@@ -9,7 +9,7 @@
 
 const CONFIG = {
     // Google Apps Script Web App URL (Replace with your deployed URL)
-    API_URL: 'https://script.google.com/macros/s/AKfycbyIteT0YJh4ZKqJIuNn3gC_K0oPGLHB6AJg2kggQ9pTVgqwGjjULmp94lDbwWLacjtv0Q/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbzrUtHGD4vEbmGW-LyKCFa79Ccs62MsfDQIjRUE1admqHyhTBi6BbtQqYomHIiM-4sDEg/exec',
     
     // Razorpay Key ID (Replace with your key)
     RAZORPAY_KEY: 'rzp_test_SDJVf0FkMO5XxH',
@@ -4085,4 +4085,5 @@ window.LearnVerse = {
     DemoData
 
 };
+
 
