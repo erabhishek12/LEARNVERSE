@@ -1,0 +1,2827 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- Primary Meta Tags -->
+    <title>LearnVerse Academy - Transform Your Future, One Course at a Time</title>
+    <meta name="title" content="LearnVerse Academy - Premium Online Courses">
+    <meta name="description" content="Learn from industry experts with our premium courses. Master new skills in Development, Design, Marketing & more. Join 10,000+ students today!">
+    <meta name="keywords" content="online courses, learn coding, web development, digital marketing, design courses, premium education">
+    <meta name="author" content="LearnVerse Academy">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://learnverse.academy/">
+    <meta property="og:title" content="LearnVerse Academy - Premium Online Courses">
+    <meta property="og:description" content="Transform your career with expert-led courses. Join 10,000+ students learning today!">
+    <meta property="og:image" content="https://learnverse.academy/assets/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://learnverse.academy/">
+    <meta property="twitter:title" content="LearnVerse Academy - Premium Online Courses">
+    <meta property="twitter:description" content="Transform your career with expert-led courses. Join 10,000+ students learning today!">
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://learnverse.academy/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="script.js" as="script">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "LearnVerse Academy",
+        "url": "https://learnverse.academy",
+        "logo": "https://learnverse.academy/logo.png",
+        "description": "Premium online learning platform",
+        "sameAs": [
+            "https://twitter.com/learnverse",
+            "https://facebook.com/learnverse",
+            "https://instagram.com/learnverse"
+        ]
+    }
+    </script>
+</head>
+<body>
+    <!-- Skip to Main Content (Accessibility) -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--                         LOADING SCREEN                               -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">LearnVerse</span>
+            </div>
+            <div class="loader-spinner">
+                <div class="spinner"></div>
+            </div>
+            <p class="loader-text">Loading amazing courses...</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--                         NAVIGATION BAR                               -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <header id="navbar" class="navbar">
+        <div class="container navbar-container">
+            <!-- Logo -->
+            <a href="#" class="logo" data-page="home">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">LearnVerse</span>
+            </a>
+            
+            <!-- Desktop Navigation -->
+            <nav class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-page="home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="courses">Courses</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">Categories</a>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" data-category="development">
+                                <span class="dropdown-icon">💻</span>
+                                Development
+                            </a>
+                            <a href="#" class="dropdown-item" data-category="design">
+                                <span class="dropdown-icon">🎨</span>
+                                Design
+                            </a>
+                            <a href="#" class="dropdown-item" data-category="marketing">
+                                <span class="dropdown-icon">📈</span>
+                                Marketing
+                            </a>
+                            <a href="#" class="dropdown-item" data-category="business">
+                                <span class="dropdown-icon">💼</span>
+                                Business
+                            </a>
+                            <a href="#" class="dropdown-item" data-category="photography">
+                                <span class="dropdown-icon">📷</span>
+                                Photography
+                            </a>
+                            <a href="#" class="dropdown-item" data-category="music">
+                                <span class="dropdown-icon">🎵</span>
+                                Music
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link" data-page="about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link" data-page="contact">Contact</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- Search Bar -->
+            <div class="search-wrapper" id="search-wrapper">
+                <button class="search-toggle" id="search-toggle" aria-label="Toggle search">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
+                    </svg>
+                    <span class="search-shortcut">⌘K</span>
+                </button>
+                <div class="search-box" id="search-box">
+                    <input type="text" class="search-input" id="search-input" placeholder="Search courses..." autocomplete="off">
+                    <button class="search-close" id="search-close" aria-label="Close search">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                    <div class="search-results" id="search-results"></div>
+                </div>
+            </div>
+            
+            <!-- Right Section -->
+            <div class="nav-right">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <svg class="icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                    </svg>
+                    <svg class="icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                
+                <!-- Cart (for logged-in users) -->
+                <button class="cart-btn" id="cart-btn" aria-label="Shopping cart" style="display: none;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                
+                <!-- Auth Buttons (Guest) -->
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="btn btn-ghost" data-page="login">Login</button>
+                    <button class="btn btn-primary" data-page="register">Sign Up</button>
+                </div>
+                
+                <!-- User Menu (Logged In) -->
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <button class="user-toggle" id="user-toggle">
+                        <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User" class="user-avatar" id="user-avatar">
+                        <span class="user-name" id="user-name">User</span>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"></path>
+                        </svg>
+                    </button>
+                    <div class="user-dropdown" id="user-dropdown">
+                        <div class="user-info">
+                            <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User" class="user-avatar-lg" id="user-avatar-lg">
+                            <div>
+                                <p class="user-fullname" id="user-fullname">User Name</p>
+                                <p class="user-email" id="user-email">user@email.com</p>
+                            </div>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <a href="#" class="user-dropdown-item" data-page="dashboard">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="#" class="user-dropdown-item" data-page="my-courses">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                            My Courses
+                        </a>
+                        <a href="#" class="user-dropdown-item" data-page="wishlist">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            Wishlist
+                        </a>
+                        <a href="#" class="user-dropdown-item" data-page="certificates">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="7"></circle>
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                            </svg>
+                            Certificates
+                        </a>
+                        <a href="#" class="user-dropdown-item" data-page="settings">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            Settings
+                        </a>
+                        <div class="user-dropdown-divider"></div>
+                        <button class="user-dropdown-item text-danger" id="logout-btn">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span class="hamburger"></span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobile-menu">
+            <div class="mobile-menu-content">
+                <div class="mobile-search">
+                    <input type="text" class="mobile-search-input" placeholder="Search courses...">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
+                    </svg>
+                </div>
+                <nav class="mobile-nav">
+                    <a href="#" class="mobile-nav-link active" data-page="home">Home</a>
+                    <a href="#" class="mobile-nav-link" data-page="courses">Courses</a>
+                    <div class="mobile-nav-dropdown">
+                        <button class="mobile-nav-link mobile-dropdown-toggle">
+                            Categories
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"></path>
+                            </svg>
+                        </button>
+                        <div class="mobile-dropdown-content">
+                            <a href="#" class="mobile-nav-sublink" data-category="development">💻 Development</a>
+                            <a href="#" class="mobile-nav-sublink" data-category="design">🎨 Design</a>
+                            <a href="#" class="mobile-nav-sublink" data-category="marketing">📈 Marketing</a>
+                            <a href="#" class="mobile-nav-sublink" data-category="business">💼 Business</a>
+                            <a href="#" class="mobile-nav-sublink" data-category="photography">📷 Photography</a>
+                            <a href="#" class="mobile-nav-sublink" data-category="music">🎵 Music</a>
+                        </div>
+                    </div>
+                    <a href="about.html" class="mobile-nav-link" data-page="about">About</a>
+                    <a href="contact.html" class="mobile-nav-link" data-page="contact">Contact</a>
+                </nav>
+                <div class="mobile-auth" id="mobile-auth">
+                    <button class="btn btn-outline btn-block" data-page="login">Login</button>
+                    <button class="btn btn-primary btn-block" data-page="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--                           MAIN CONTENT                               -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <main id="main-content">
+        
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                         HOME PAGE                                -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-home" class="page active">
+            
+            <!-- Hero Section -->
+            <section class="hero" id="hero">
+                <div class="hero-bg">
+                    <div class="hero-gradient"></div>
+                    <div class="hero-mesh"></div>
+                    <div class="floating-shapes">
+                        <div class="shape shape-1"></div>
+                        <div class="shape shape-2"></div>
+                        <div class="shape shape-3"></div>
+                        <div class="shape shape-4"></div>
+                        <div class="shape shape-5"></div>
+                    </div>
+                </div>
+                
+                <div class="container hero-container">
+                    <div class="hero-content">
+                        <div class="hero-badge animate-fade-up">
+                            <span class="badge-icon">🚀</span>
+                            <span>New: AI & Machine Learning Courses Available!</span>
+                        </div>
+                        
+                        <h1 class="hero-title animate-fade-up delay-1">
+                            <span class="title-line">Transform Your</span>
+                            <span class="title-line gradient-text">Future</span>
+                            <span class="title-line">One Course at a Time</span>
+                        </h1>
+                        
+                        <p class="hero-subtitle animate-fade-up delay-2">
+                            Master new skills with expert-led courses. From coding to design, 
+                            marketing to business — unlock your potential with 
+                            <span class="highlight">50+ premium courses</span>.
+                        </p>
+                        
+                        <div class="hero-cta animate-fade-up delay-3">
+                            <button class="btn btn-primary btn-lg" data-page="courses">
+                                <span>Explore Courses</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                            <button class="btn btn-glass btn-lg" id="watch-demo-btn">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <span>Watch Demo</span>
+                            </button>
+                        </div>
+                        
+                        <div class="hero-stats animate-fade-up delay-4">
+                            <div class="stat">
+                                <span class="stat-number" data-count="10000">0</span>
+                                <span class="stat-suffix">+</span>
+                                <span class="stat-label">Students</span>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat">
+                                <span class="stat-number" data-count="50">0</span>
+                                <span class="stat-suffix">+</span>
+                                <span class="stat-label">Courses</span>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat">
+                                <span class="stat-number" data-count="4.9">0</span>
+                                <span class="stat-suffix">★</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-visual animate-fade-left delay-2">
+                        <div class="hero-cards" id="hero-cards">
+                            <div class="hero-card hero-card-1">
+                                <div class="card-image">
+                                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop" alt="Web Development">
+                                    <div class="card-overlay">
+                                        <span class="play-icon">▶</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <span class="card-category">Development</span>
+                                    <h4 class="card-title">Complete Web Development Bootcamp</h4>
+                                    <div class="card-meta">
+                                        <span class="rating">⭐ 4.9</span>
+                                        <span class="price">₹499</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="hero-card hero-card-2">
+                                <div class="card-image">
+                                    <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=250&fit=crop" alt="UI/UX Design">
+                                    <div class="card-overlay">
+                                        <span class="play-icon">▶</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <span class="card-category">Design</span>
+                                    <h4 class="card-title">UI/UX Design Masterclass</h4>
+                                    <div class="card-meta">
+                                        <span class="rating">⭐ 4.8</span>
+                                        <span class="price">₹399</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="hero-card hero-card-3">
+                                <div class="card-image">
+                                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop" alt="Digital Marketing">
+                                    <div class="card-overlay">
+                                        <span class="play-icon">▶</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <span class="card-category">Marketing</span>
+                                    <h4 class="card-title">Digital Marketing Pro</h4>
+                                    <div class="card-meta">
+                                        <span class="rating">⭐ 4.7</span>
+                                        <span class="price">₹599</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="scroll-indicator animate-fade-up delay-5">
+                    <div class="mouse">
+                        <div class="wheel"></div>
+                    </div>
+                    <span>Scroll to explore</span>
+                </div>
+            </section>
+
+            <!-- Trusted By Section -->
+            <section class="trusted-by">
+                <div class="container">
+                    <p class="trusted-text">Our students work at</p>
+                    <div class="logo-marquee">
+                        <div class="logo-track">
+                            <div class="logo-item">
+                                <span class="company-logo">Google</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Microsoft</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Amazon</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Meta</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Apple</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Netflix</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Spotify</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Adobe</span>
+                            </div>
+                            <!-- Duplicate for seamless loop -->
+                            <div class="logo-item">
+                                <span class="company-logo">Google</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Microsoft</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Amazon</span>
+                            </div>
+                            <div class="logo-item">
+                                <span class="company-logo">Meta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Courses Section -->
+            <section class="section featured-courses" id="featured-courses">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-header-left">
+                            <span class="section-badge">🔥 Popular</span>
+                            <h2 class="section-title">Featured Courses</h2>
+                            <p class="section-subtitle">Explore our most popular courses loved by thousands of students</p>
+                        </div>
+                        <a href="#" class="btn btn-ghost" data-page="courses">
+                            View All Courses
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    
+                    <!-- Category Filter Tabs -->
+                    <div class="filter-tabs" id="category-tabs">
+                        <button class="filter-tab active" data-filter="all">All</button>
+                        <button class="filter-tab" data-filter="development">Development</button>
+                        <button class="filter-tab" data-filter="design">Design</button>
+                        <button class="filter-tab" data-filter="marketing">Marketing</button>
+                        <button class="filter-tab" data-filter="business">Business</button>
+                    </div>
+                    
+                    <!-- Course Grid -->
+                    <div class="course-grid" id="featured-course-grid">
+                        <!-- Courses loaded via JavaScript -->
+                        <div class="skeleton-grid">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-cta">
+                        <button class="btn btn-outline btn-lg" id="load-more-courses">
+                            Load More Courses
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why Choose Us - Bento Grid -->
+            <section class="section why-choose-us">
+                <div class="container">
+                    <div class="section-header centered">
+                        <span class="section-badge">✨ Why Us</span>
+                        <h2 class="section-title">Why Choose LearnVerse?</h2>
+                        <p class="section-subtitle">Everything you need to succeed in your learning journey</p>
+                    </div>
+                    
+                    <div class="bento-grid">
+                        <div class="bento-item bento-large">
+                            <div class="bento-icon">📹</div>
+                            <h3 class="bento-title">HD Video Lessons</h3>
+                            <p class="bento-description">Crystal clear, professionally produced video content that makes learning enjoyable and effective.</p>
+                            <div class="bento-visual">
+                                <div class="video-preview">
+                                    <div class="video-bar"></div>
+                                    <div class="video-bar"></div>
+                                    <div class="video-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bento-item">
+                            <div class="bento-icon">📱</div>
+                            <h3 class="bento-title">Learn Anywhere</h3>
+                            <p class="bento-description">Access courses on any device - desktop, tablet, or mobile.</p>
+                        </div>
+                        
+                        <div class="bento-item">
+                            <div class="bento-icon">🎓</div>
+                            <h3 class="bento-title">Get Certified</h3>
+                            <p class="bento-description">Earn certificates to showcase your new skills.</p>
+                        </div>
+                        
+                        <div class="bento-item bento-wide">
+                            <div class="bento-icon">👨‍🏫</div>
+                            <h3 class="bento-title">Expert Instructors</h3>
+                            <p class="bento-description">Learn from industry professionals with years of real-world experience.</p>
+                            <div class="instructor-avatars">
+                                <img src="https://i.pravatar.cc/100?img=1" alt="Instructor">
+                                <img src="https://i.pravatar.cc/100?img=2" alt="Instructor">
+                                <img src="https://i.pravatar.cc/100?img=3" alt="Instructor">
+                                <img src="https://i.pravatar.cc/100?img=4" alt="Instructor">
+                                <span class="more-instructors">+20</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bento-item">
+                            <div class="bento-icon">💬</div>
+                            <h3 class="bento-title">Community Support</h3>
+                            <p class="bento-description">Connect with fellow learners and get help when needed.</p>
+                        </div>
+                        
+                        <div class="bento-item">
+                            <div class="bento-icon">♾️</div>
+                            <h3 class="bento-title">Lifetime Access</h3>
+                            <p class="bento-description">One-time payment, unlimited access to course content.</p>
+                        </div>
+                        
+                        <div class="bento-item">
+                            <div class="bento-icon">💰</div>
+                            <h3 class="bento-title">Affordable Prices</h3>
+                            <p class="bento-description">Quality education at prices that won't break the bank.</p>
+                        </div>
+                        
+                        <div class="bento-item">
+                            <div class="bento-icon">📊</div>
+                            <h3 class="bento-title">Track Progress</h3>
+                            <p class="bento-description">Visual progress tracking to keep you motivated.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How It Works -->
+            <section class="section how-it-works">
+                <div class="container">
+                    <div class="section-header centered">
+                        <span class="section-badge">🎯 Simple Steps</span>
+                        <h2 class="section-title">How It Works</h2>
+                        <p class="section-subtitle">Get started in just 3 simple steps</p>
+                    </div>
+                    
+                    <div class="steps-container">
+                        <div class="step-line"></div>
+                        
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-icon">🔍</div>
+                                <h3 class="step-title">Browse & Choose</h3>
+                                <p class="step-description">Explore our catalog and find the perfect course for your goals.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-icon">💳</div>
+                                <h3 class="step-title">Enroll & Pay</h3>
+                                <p class="step-description">Secure payment via UPI, cards, or wallets. Instant access!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-icon">🚀</div>
+                                <h3 class="step-title">Learn & Grow</h3>
+                                <p class="step-description">Start learning immediately and transform your career.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Popular Categories -->
+            <section class="section categories">
+                <div class="container">
+                    <div class="section-header centered">
+                        <span class="section-badge">📚 Categories</span>
+                        <h2 class="section-title">Explore Categories</h2>
+                        <p class="section-subtitle">Find the right course from our diverse catalog</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <a href="#" class="category-card" data-category="development">
+                            <div class="category-icon">💻</div>
+                            <h3 class="category-name">Development</h3>
+                            <span class="category-count">15 Courses</span>
+                        </a>
+                        
+                        <a href="#" class="category-card" data-category="design">
+                            <div class="category-icon">🎨</div>
+                            <h3 class="category-name">Design</h3>
+                            <span class="category-count">12 Courses</span>
+                        </a>
+                        
+                        <a href="#" class="category-card" data-category="marketing">
+                            <div class="category-icon">📈</div>
+                            <h3 class="category-name">Marketing</h3>
+                            <span class="category-count">10 Courses</span>
+                        </a>
+                        
+                        <a href="#" class="category-card" data-category="business">
+                            <div class="category-icon">💼</div>
+                            <h3 class="category-name">Business</h3>
+                            <span class="category-count">8 Courses</span>
+                        </a>
+                        
+                        <a href="#" class="category-card" data-category="photography">
+                            <div class="category-icon">📷</div>
+                            <h3 class="category-name">Photography</h3>
+                            <span class="category-count">6 Courses</span>
+                        </a>
+                        
+                        <a href="#" class="category-card" data-category="music">
+                            <div class="category-icon">🎵</div>
+                            <h3 class="category-name">Music</h3>
+                            <span class="category-count">5 Courses</span>
+                        </a>
+                        
+                        <a href="#" class="category-card" data-category="finance">
+                            <div class="category-icon">💰</div>
+                            <h3 class="category-name">Finance</h3>
+                            <span class="category-count">7 Courses</span>
+                        </a>
+                        
+                        <a href="#" class="category-card" data-category="fitness">
+                            <div class="category-icon">💪</div>
+                            <h3 class="category-name">Health & Fitness</h3>
+                            <span class="category-count">4 Courses</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials -->
+            <section class="section testimonials">
+                <div class="container">
+                    <div class="section-header centered">
+                        <span class="section-badge">💬 Reviews</span>
+                        <h2 class="section-title">What Our Students Say</h2>
+                        <p class="section-subtitle">Join thousands of satisfied learners</p>
+                    </div>
+                    
+                    <div class="testimonial-slider" id="testimonial-slider">
+                        <div class="testimonial-track">
+                            <div class="testimonial-card">
+                                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                                <p class="testimonial-text">"This platform transformed my career! The courses are incredibly well-structured and the instructors are top-notch. I landed my dream job at Google thanks to LearnVerse."</p>
+                                <div class="testimonial-author">
+                                    <img src="https://i.pravatar.cc/100?img=11" alt="Student" class="author-avatar">
+                                    <div class="author-info">
+                                        <h4 class="author-name">Rahul Sharma</h4>
+                                        <p class="author-role">Software Engineer at Google</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="testimonial-card">
+                                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                                <p class="testimonial-text">"The UI/UX course was exactly what I needed. Clear explanations, practical projects, and amazing community support. Worth every rupee!"</p>
+                                <div class="testimonial-author">
+                                    <img src="https://i.pravatar.cc/100?img=5" alt="Student" class="author-avatar">
+                                    <div class="author-info">
+                                        <h4 class="author-name">Priya Patel</h4>
+                                        <p class="author-role">UI/UX Designer at Flipkart</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="testimonial-card">
+                                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                                <p class="testimonial-text">"I've tried many platforms but LearnVerse stands out. The video quality, course content, and lifetime access make it unbeatable value."</p>
+                                <div class="testimonial-author">
+                                    <img src="https://i.pravatar.cc/100?img=8" alt="Student" class="author-avatar">
+                                    <div class="author-info">
+                                        <h4 class="author-name">Amit Kumar</h4>
+                                        <p class="author-role">Digital Marketer</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="testimonial-card">
+                                <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                                <p class="testimonial-text">"From zero coding knowledge to building full-stack apps in 3 months! The step-by-step approach made learning so easy and enjoyable."</p>
+                                <div class="testimonial-author">
+                                    <img src="https://i.pravatar.cc/100?img=9" alt="Student" class="author-avatar">
+                                    <div class="author-info">
+                                        <h4 class="author-name">Sneha Reddy</h4>
+                                        <p class="author-role">Full Stack Developer</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="testimonial-nav">
+                            <button class="testimonial-btn prev" id="testimonial-prev">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 18l-6-6 6-6"></path>
+                                </svg>
+                            </button>
+                            <div class="testimonial-dots" id="testimonial-dots">
+                                <button class="dot active"></button>
+                                <button class="dot"></button>
+                                <button class="dot"></button>
+                                <button class="dot"></button>
+                            </div>
+                            <button class="testimonial-btn next" id="testimonial-next">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="section stats-section">
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">👨‍🎓</div>
+                            <div class="stat-value"><span class="counter" data-target="10000">0</span>+</div>
+                            <div class="stat-name">Happy Students</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">📚</div>
+                            <div class="stat-value"><span class="counter" data-target="50">0</span>+</div>
+                            <div class="stat-name">Courses</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-value"><span class="counter" data-target="500">0</span>+</div>
+                            <div class="stat-name">Hours of Content</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">⭐</div>
+                            <div class="stat-value"><span class="counter" data-target="4.9">0</span></div>
+                            <div class="stat-name">Average Rating</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instructors -->
+            <section class="section instructors">
+                <div class="container">
+                    <div class="section-header centered">
+                        <span class="section-badge">👨‍🏫 Experts</span>
+                        <h2 class="section-title">Meet Our Instructors</h2>
+                        <p class="section-subtitle">Learn from industry-leading professionals</p>
+                    </div>
+                    
+                    <div class="instructor-grid">
+                        <div class="instructor-card">
+                            <div class="instructor-image">
+                                <img src="https://i.pravatar.cc/300?img=12" alt="Instructor">
+                                <div class="instructor-social">
+                                    <a href="#" class="social-link">𝕏</a>
+                                    <a href="#" class="social-link">in</a>
+                                    <a href="#" class="social-link">▶</a>
+                                </div>
+                            </div>
+                            <div class="instructor-info">
+                                <h3 class="instructor-name">Vikram Singh</h3>
+                                <p class="instructor-role">Full Stack Developer</p>
+                                <p class="instructor-bio">10+ years at Amazon & Microsoft. Taught 50,000+ students worldwide.</p>
+                                <div class="instructor-stats">
+                                    <span>12 Courses</span>
+                                    <span>⭐ 4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="instructor-card">
+                            <div class="instructor-image">
+                                <img src="https://i.pravatar.cc/300?img=25" alt="Instructor">
+                                <div class="instructor-social">
+                                    <a href="#" class="social-link">𝕏</a>
+                                    <a href="#" class="social-link">in</a>
+                                    <a href="#" class="social-link">▶</a>
+                                </div>
+                            </div>
+                            <div class="instructor-info">
+                                <h3 class="instructor-name">Aishwarya Rao</h3>
+                                <p class="instructor-role">UI/UX Lead Designer</p>
+                                <p class="instructor-bio">Former Design Lead at Swiggy. Passionate about creating beautiful user experiences.</p>
+                                <div class="instructor-stats">
+                                    <span>8 Courses</span>
+                                    <span>⭐ 4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="instructor-card">
+                            <div class="instructor-image">
+                                <img src="https://i.pravatar.cc/300?img=33" alt="Instructor">
+                                <div class="instructor-social">
+                                    <a href="#" class="social-link">𝕏</a>
+                                    <a href="#" class="social-link">in</a>
+                                    <a href="#" class="social-link">▶</a>
+                                </div>
+                            </div>
+                            <div class="instructor-info">
+                                <h3 class="instructor-name">Karthik Menon</h3>
+                                <p class="instructor-role">Digital Marketing Expert</p>
+                                <p class="instructor-bio">Helped 100+ brands grow online. Google & Facebook certified professional.</p>
+                                <div class="instructor-stats">
+                                    <span>10 Courses</span>
+                                    <span>⭐ 4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="instructor-card">
+                            <div class="instructor-image">
+                                <img src="https://i.pravatar.cc/300?img=45" alt="Instructor">
+                                <div class="instructor-social">
+                                    <a href="#" class="social-link">𝕏</a>
+                                    <a href="#" class="social-link">in</a>
+                                    <a href="#" class="social-link">▶</a>
+                                </div>
+                            </div>
+                            <div class="instructor-info">
+                                <h3 class="instructor-name">Neha Gupta</h3>
+                                <p class="instructor-role">Data Science Lead</p>
+                                <p class="instructor-bio">PhD from IIT. Working on AI/ML at leading tech companies for 8+ years.</p>
+                                <div class="instructor-stats">
+                                    <span>6 Courses</span>
+                                    <span>⭐ 4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="section faq-section">
+                <div class="container">
+                    <div class="section-header centered">
+                        <span class="section-badge">❓ FAQ</span>
+                        <h2 class="section-title">Frequently Asked Questions</h2>
+                        <p class="section-subtitle">Got questions? We've got answers!</p>
+                    </div>
+                    
+                    <div class="faq-container">
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>How do I access my courses after purchase?</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"></path>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>After purchasing a course, you'll get instant access. Simply log in to your account, go to "My Courses" in your dashboard, and start learning immediately!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Do I get lifetime access to courses?</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"></path>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Yes! Once you purchase a course, you get lifetime access. Learn at your own pace, revisit lessons anytime, and access all future updates to the course content.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>What payment methods do you accept?</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"></path>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>We accept all major payment methods: UPI (Google Pay, PhonePe, Paytm), Credit/Debit Cards, Net Banking, and popular wallets. All payments are secured by Razorpay.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Do I get a certificate after completion?</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"></path>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Absolutely! Upon completing a course, you'll receive a verified certificate of completion that you can download and share on LinkedIn or add to your resume.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>Can I watch courses on mobile?</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"></path>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>Yes! Our platform is fully responsive. You can access your courses on any device - desktop, laptop, tablet, or smartphone. Learn anywhere, anytime!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <button class="faq-question">
+                                <span>What is your refund policy?</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"></path>
+                                </svg>
+                            </button>
+                            <div class="faq-answer">
+                                <p>We offer a 30-day money-back guarantee on all courses. If you're not satisfied with your purchase, contact our support team within 30 days for a full refund.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-cta">
+                        <p>Still have questions?</p>
+                        <a href="contact.html" class="btn btn-outline" data-page="contact">Contact Support</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Newsletter CTA -->
+            <section class="section newsletter-cta">
+                <div class="container">
+                    <div class="newsletter-card">
+                        <div class="newsletter-content">
+                            <h2 class="newsletter-title">Start Learning Today!</h2>
+                            <p class="newsletter-text">Join 10,000+ students already learning on LearnVerse. Get exclusive discounts and updates.</p>
+                            <form class="newsletter-form" id="newsletter-form">
+                                <div class="form-group">
+                                    <input type="email" class="form-input" placeholder="Enter your email" required>
+                                    <button type="submit" class="btn btn-primary">
+                                        Subscribe
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </form>
+                            <p class="newsletter-note">🔒 No spam. Unsubscribe anytime.</p>
+                        </div>
+                        <div class="newsletter-decoration">
+                            <div class="decoration-circle circle-1"></div>
+                            <div class="decoration-circle circle-2"></div>
+                            <div class="decoration-circle circle-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+                <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                       COURSES PAGE                              -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-courses" class="page">
+            <section class="page-hero page-hero-sm">
+                <div class="container">
+                    <h1 class="page-title">Explore All Courses</h1>
+                    <p class="page-subtitle">Discover courses that will transform your skills</p>
+                    <div class="page-search">
+                        <input type="text" class="search-input-lg" id="courses-search" placeholder="Search for courses...">
+                        <button class="btn btn-primary">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="M21 21l-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="courses-section">
+                <div class="container">
+                    <div class="courses-layout">
+                        <!-- Sidebar Filters -->
+                        <aside class="filters-sidebar" id="filters-sidebar">
+                            <div class="filters-header">
+                                <h3>Filters</h3>
+                                <button class="btn btn-ghost btn-sm" id="clear-filters">Clear All</button>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <h4 class="filter-title">Category</h4>
+                                <div class="filter-options">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="category" value="development">
+                                        <span class="checkbox-custom"></span>
+                                        <span>Development</span>
+                                        <span class="count">(15)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="category" value="design">
+                                        <span class="checkbox-custom"></span>
+                                        <span>Design</span>
+                                        <span class="count">(12)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="category" value="marketing">
+                                        <span class="checkbox-custom"></span>
+                                        <span>Marketing</span>
+                                        <span class="count">(10)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="category" value="business">
+                                        <span class="checkbox-custom"></span>
+                                        <span>Business</span>
+                                        <span class="count">(8)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="category" value="photography">
+                                        <span class="checkbox-custom"></span>
+                                        <span>Photography</span>
+                                        <span class="count">(6)</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <h4 class="filter-title">Price Range</h4>
+                                <div class="price-range-slider">
+                                    <input type="range" min="0" max="5000" value="5000" class="range-slider" id="price-range">
+                                    <div class="range-values">
+                                        <span>₹0</span>
+                                        <span id="price-value">₹5000</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <h4 class="filter-title">Level</h4>
+                                <div class="filter-options">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="level" value="beginner">
+                                        <span class="checkbox-custom"></span>
+                                        <span>Beginner</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="level" value="intermediate">
+                                        <span class="checkbox-custom"></span>
+                                        <span>Intermediate</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="level" value="advanced">
+                                        <span class="checkbox-custom"></span>
+                                        <span>Advanced</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <h4 class="filter-title">Duration</h4>
+                                <div class="filter-options">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="duration" value="0-2">
+                                        <span class="checkbox-custom"></span>
+                                        <span>0-2 Hours</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="duration" value="2-5">
+                                        <span class="checkbox-custom"></span>
+                                        <span>2-5 Hours</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="duration" value="5-10">
+                                        <span class="checkbox-custom"></span>
+                                        <span>5-10 Hours</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="duration" value="10+">
+                                        <span class="checkbox-custom"></span>
+                                        <span>10+ Hours</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <h4 class="filter-title">Rating</h4>
+                                <div class="filter-options">
+                                    <label class="radio-label">
+                                        <input type="radio" name="rating" value="4.5">
+                                        <span class="radio-custom"></span>
+                                        <span>⭐ 4.5 & up</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="rating" value="4">
+                                        <span class="radio-custom"></span>
+                                        <span>⭐ 4.0 & up</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="rating" value="3.5">
+                                        <span class="radio-custom"></span>
+                                        <span>⭐ 3.5 & up</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-block" id="apply-filters">Apply Filters</button>
+                        </aside>
+                        
+                        <!-- Mobile Filter Toggle -->
+                        <button class="mobile-filter-toggle" id="mobile-filter-toggle">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="4" y1="21" x2="4" y2="14"></line>
+                                <line x1="4" y1="10" x2="4" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12" y2="3"></line>
+                                <line x1="20" y1="21" x2="20" y2="16"></line>
+                                <line x1="20" y1="12" x2="20" y2="3"></line>
+                                <line x1="1" y1="14" x2="7" y2="14"></line>
+                                <line x1="9" y1="8" x2="15" y2="8"></line>
+                                <line x1="17" y1="16" x2="23" y2="16"></line>
+                            </svg>
+                            Filters
+                        </button>
+                        
+                        <!-- Courses Grid -->
+                        <div class="courses-main">
+                            <div class="courses-header">
+                                <p class="results-count">Showing <span id="courses-count">0</span> courses</p>
+                                <div class="courses-sort">
+                                    <label>Sort by:</label>
+                                    <select class="sort-select" id="sort-courses">
+                                        <option value="popular">Most Popular</option>
+                                        <option value="newest">Newest</option>
+                                        <option value="price-low">Price: Low to High</option>
+                                        <option value="price-high">Price: High to Low</option>
+                                        <option value="rating">Highest Rated</option>
+                                    </select>
+                                </div>
+                                <div class="view-toggle">
+                                    <button class="view-btn active" data-view="grid" aria-label="Grid view">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="7" height="7"></rect>
+                                            <rect x="14" y="3" width="7" height="7"></rect>
+                                            <rect x="14" y="14" width="7" height="7"></rect>
+                                            <rect x="3" y="14" width="7" height="7"></rect>
+                                        </svg>
+                                    </button>
+                                    <button class="view-btn" data-view="list" aria-label="List view">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="courses-grid" id="all-courses-grid">
+                                <!-- Courses loaded via JavaScript -->
+                            </div>
+                            
+                            <!-- Empty State -->
+                            <div class="empty-state" id="courses-empty" style="display: none;">
+                                <div class="empty-icon">📚</div>
+                                <h3>No courses found</h3>
+                                <p>Try adjusting your filters or search query</p>
+                                <button class="btn btn-primary" id="reset-filters">Reset Filters</button>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div class="pagination" id="courses-pagination">
+                                <button class="pagination-btn prev" disabled>
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 18l-6-6 6-6"></path>
+                                    </svg>
+                                </button>
+                                <div class="pagination-numbers">
+                                    <button class="pagination-num active">1</button>
+                                    <button class="pagination-num">2</button>
+                                    <button class="pagination-num">3</button>
+                                    <span class="pagination-dots">...</span>
+                                    <button class="pagination-num">10</button>
+                                </div>
+                                <button class="pagination-btn next">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                    COURSE DETAIL PAGE                           -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-course-detail" class="page">
+            <section class="course-detail">
+                <div class="container">
+                    <!-- Breadcrumb -->
+                    <nav class="breadcrumb" aria-label="Breadcrumb">
+                        <a href="#" data-page="home">Home</a>
+                        <span class="separator">/</span>
+                        <a href="#" data-page="courses">Courses</a>
+                        <span class="separator">/</span>
+                        <span class="current" id="breadcrumb-course">Course Name</span>
+                    </nav>
+                    
+                    <div class="course-detail-layout">
+                        <!-- Main Content -->
+                        <div class="course-main">
+                            <!-- Course Header -->
+                            <div class="course-header">
+                                <span class="course-badge" id="detail-category">Development</span>
+                                <h1 class="course-title" id="detail-title">Complete Web Development Bootcamp 2024</h1>
+                                <p class="course-subtitle" id="detail-subtitle">Learn HTML, CSS, JavaScript, React, Node.js and more to become a full-stack developer</p>
+                                
+                                <div class="course-meta">
+                                    <div class="meta-item">
+                                        <span class="rating-stars">⭐⭐⭐⭐⭐</span>
+                                        <span class="rating-value" id="detail-rating">4.9</span>
+                                        <span class="rating-count">(<span id="detail-reviews">2,456</span> reviews)</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </svg>
+                                        <span id="detail-students">12,345</span> students
+                                    </div>
+                                    <div class="meta-item">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        Last updated <span id="detail-updated">January 2024</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="course-instructor-mini">
+                                    <img src="https://i.pravatar.cc/100?img=12" alt="Instructor" class="instructor-avatar" id="detail-instructor-img">
+                                    <span>Created by <a href="#" class="instructor-link" id="detail-instructor-name">Vikram Singh</a></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Video Preview -->
+                            <div class="course-preview">
+                                <div class="preview-thumbnail" id="detail-thumbnail">
+                                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop" alt="Course Preview">
+                                    <button class="play-btn" id="preview-play-btn">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                        </svg>
+                                    </button>
+                                    <span class="preview-text">Preview this course</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Course Tabs -->
+                            <div class="course-tabs">
+                                <div class="tabs-nav">
+                                    <button class="tab-btn active" data-tab="overview">Overview</button>
+                                    <button class="tab-btn" data-tab="curriculum">Curriculum</button>
+                                    <button class="tab-btn" data-tab="instructor">Instructor</button>
+                                    <button class="tab-btn" data-tab="reviews">Reviews</button>
+                                </div>
+                                
+                                <!-- Overview Tab -->
+                                <div class="tab-content active" id="tab-overview">
+                                    <div class="content-block">
+                                        <h3>What you'll learn</h3>
+                                        <ul class="learn-list" id="detail-learn-list">
+                                            <li>
+                                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                Build 16+ real-world projects
+                                            </li>
+                                            <li>
+                                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                Master HTML, CSS, and JavaScript
+                                            </li>
+                                            <li>
+                                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                Learn React.js from scratch
+                                            </li>
+                                            <li>
+                                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                Build backend with Node.js & Express
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="content-block">
+                                        <h3>Description</h3>
+                                        <div class="description-content" id="detail-description">
+                                            <p>Welcome to the Complete Web Development Bootcamp! This is the only course you need to learn web development and become a full-stack developer.</p>
+                                            <p>With over 65 hours of HD video content, this course covers everything from basic HTML to advanced React.js and Node.js concepts. You'll build real projects that you can add to your portfolio.</p>
+                                            <p>Whether you're a complete beginner or have some programming experience, this course will take your skills to the next level.</p>
+                                        </div>
+                                        <button class="btn btn-ghost read-more-btn">Read More</button>
+                                    </div>
+                                    
+                                    <div class="content-block">
+                                        <h3>Requirements</h3>
+                                        <ul class="requirements-list" id="detail-requirements">
+                                            <li>No programming experience needed - I'll teach you everything you need to know</li>
+                                            <li>A computer with access to the internet</li>
+                                            <li>Eagerness to learn and build amazing projects</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="content-block">
+                                        <h3>Who this course is for</h3>
+                                        <ul class="target-list" id="detail-target">
+                                            <li>Anyone who wants to learn web development</li>
+                                            <li>Beginners with no coding experience</li>
+                                            <li>Developers looking to expand their skills</li>
+                                            <li>Anyone wanting to build their own websites or apps</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Curriculum Tab -->
+                                <div class="tab-content" id="tab-curriculum">
+                                    <div class="curriculum-header">
+                                        <div class="curriculum-stats">
+                                            <span><span id="curriculum-sections">12</span> sections</span>
+                                            <span>•</span>
+                                            <span><span id="curriculum-lessons">156</span> lessons</span>
+                                            <span>•</span>
+                                            <span><span id="curriculum-duration">65h 30m</span> total</span>
+                                        </div>
+                                        <button class="btn btn-ghost" id="expand-all">Expand All</button>
+                                    </div>
+                                    
+                                    <div class="curriculum-list" id="curriculum-list">
+                                        <!-- Sections loaded via JavaScript -->
+                                        <div class="curriculum-section">
+                                            <button class="section-header">
+                                                <div class="section-info">
+                                                    <svg class="icon chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M6 9l6 6 6-6"></path>
+                                                    </svg>
+                                                    <span class="section-title">Section 1: Getting Started</span>
+                                                </div>
+                                                <span class="section-meta">5 lessons • 45 min</span>
+                                            </button>
+                                            <div class="section-content">
+                                                <div class="lesson-item">
+                                                    <div class="lesson-info">
+                                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                                        </svg>
+                                                        <span class="lesson-title">Welcome to the Course</span>
+                                                        <span class="lesson-badge free">Preview</span>
+                                                    </div>
+                                                    <span class="lesson-duration">5:30</span>
+                                                </div>
+                                                <div class="lesson-item">
+                                                    <div class="lesson-info">
+                                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                                        </svg>
+                                                        <span class="lesson-title">Setting Up Your Environment</span>
+                                                    </div>
+                                                    <span class="lesson-duration">12:45</span>
+                                                </div>
+                                                <div class="lesson-item locked">
+                                                    <div class="lesson-info">
+                                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                        </svg>
+                                                        <span class="lesson-title">Your First HTML Page</span>
+                                                    </div>
+                                                    <span class="lesson-duration">15:20</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="curriculum-section">
+                                            <button class="section-header">
+                                                <div class="section-info">
+                                                    <svg class="icon chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M6 9l6 6 6-6"></path>
+                                                    </svg>
+                                                    <span class="section-title">Section 2: HTML Fundamentals</span>
+                                                </div>
+                                                <span class="section-meta">12 lessons • 2h 15m</span>
+                                            </button>
+                                            <div class="section-content" style="display: none;">
+                                                <!-- Lessons -->
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="curriculum-section">
+                                            <button class="section-header">
+                                                <div class="section-info">
+                                                    <svg class="icon chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M6 9l6 6 6-6"></path>
+                                                    </svg>
+                                                    <span class="section-title">Section 3: CSS Styling</span>
+                                                </div>
+                                                <span class="section-meta">18 lessons • 4h 30m</span>
+                                            </button>
+                                            <div class="section-content" style="display: none;">
+                                                <!-- Lessons -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Instructor Tab -->
+                                <div class="tab-content" id="tab-instructor">
+                                    <div class="instructor-profile">
+                                        <div class="instructor-header">
+                                            <img src="https://i.pravatar.cc/200?img=12" alt="Instructor" class="instructor-photo" id="instructor-photo">
+                                            <div class="instructor-details">
+                                                <h3 class="instructor-name" id="instructor-name">Vikram Singh</h3>
+                                                <p class="instructor-title" id="instructor-title">Full Stack Developer & Educator</p>
+                                                <div class="instructor-stats">
+                                                    <div class="stat">
+                                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                                        </svg>
+                                                        <span>4.9 Instructor Rating</span>
+                                                    </div>
+                                                    <div class="stat">
+                                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                                        </svg>
+                                                        <span>15,234 Reviews</span>
+                                                    </div>
+                                                    <div class="stat">
+                                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                                            <circle cx="9" cy="7" r="4"></circle>
+                                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                                        </svg>
+                                                        <span>50,000+ Students</span>
+                                                    </div>
+                                                    <div class="stat">
+                                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                                        </svg>
+                                                        <span>12 Courses</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="instructor-bio" id="instructor-bio">
+                                            <p>Hi, I'm Vikram! I'm a full-stack developer with over 10 years of experience at companies like Amazon and Microsoft.</p>
+                                            <p>I've taught over 50,000 students worldwide and I'm passionate about making complex topics simple and fun to learn. My courses focus on practical, hands-on learning with real-world projects.</p>
+                                            <p>When I'm not coding or teaching, you can find me exploring new technologies, contributing to open source, or playing chess.</p>
+                                        </div>
+                                        <div class="instructor-courses">
+                                            <h4>More courses by this instructor</h4>
+                                            <div class="mini-course-list" id="instructor-courses">
+                                                <!-- Loaded via JS -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Reviews Tab -->
+                                <div class="tab-content" id="tab-reviews">
+                                    <div class="reviews-summary">
+                                        <div class="rating-overview">
+                                            <div class="rating-big">
+                                                <span class="rating-number" id="review-rating">4.9</span>
+                                                <div class="rating-stars">⭐⭐⭐⭐⭐</div>
+                                                <span class="rating-label">Course Rating</span>
+                                            </div>
+                                            <div class="rating-bars">
+                                                <div class="rating-bar">
+                                                    <span class="bar-label">5 stars</span>
+                                                    <div class="bar-track">
+                                                        <div class="bar-fill" style="width: 78%"></div>
+                                                    </div>
+                                                    <span class="bar-percent">78%</span>
+                                                </div>
+                                                <div class="rating-bar">
+                                                    <span class="bar-label">4 stars</span>
+                                                    <div class="bar-track">
+                                                        <div class="bar-fill" style="width: 15%"></div>
+                                                    </div>
+                                                    <span class="bar-percent">15%</span>
+                                                </div>
+                                                <div class="rating-bar">
+                                                    <span class="bar-label">3 stars</span>
+                                                    <div class="bar-track">
+                                                        <div class="bar-fill" style="width: 5%"></div>
+                                                    </div>
+                                                    <span class="bar-percent">5%</span>
+                                                </div>
+                                                <div class="rating-bar">
+                                                    <span class="bar-label">2 stars</span>
+                                                    <div class="bar-track">
+                                                        <div class="bar-fill" style="width: 1%"></div>
+                                                    </div>
+                                                    <span class="bar-percent">1%</span>
+                                                </div>
+                                                <div class="rating-bar">
+                                                    <span class="bar-label">1 star</span>
+                                                    <div class="bar-track">
+                                                        <div class="bar-fill" style="width: 1%"></div>
+                                                    </div>
+                                                    <span class="bar-percent">1%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="reviews-list" id="reviews-list">
+                                        <div class="review-item">
+                                            <div class="review-header">
+                                                <img src="https://i.pravatar.cc/100?img=15" alt="Reviewer" class="reviewer-avatar">
+                                                <div class="reviewer-info">
+                                                    <h4 class="reviewer-name">Ankit Verma</h4>
+                                                    <div class="review-meta">
+                                                        <span class="review-rating">⭐⭐⭐⭐⭐</span>
+                                                        <span class="review-date">2 weeks ago</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="review-text">This course is absolutely fantastic! Vikram explains everything so clearly and the projects are really helpful for building a portfolio. Highly recommended for anyone starting their web development journey.</p>
+                                            <div class="review-actions">
+                                                <button class="helpful-btn">
+                                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                                    </svg>
+                                                    Helpful (24)
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="review-item">
+                                            <div class="review-header">
+                                                <img src="https://i.pravatar.cc/100?img=20" alt="Reviewer" class="reviewer-avatar">
+                                                <div class="reviewer-info">
+                                                    <h4 class="reviewer-name">Priya Sharma</h4>
+                                                    <div class="review-meta">
+                                                        <span class="review-rating">⭐⭐⭐⭐⭐</span>
+                                                        <span class="review-date">1 month ago</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="review-text">Best web development course I've ever taken! The progression from basics to advanced topics is perfect. I'm now working as a frontend developer thanks to this course.</p>
+                                            <div class="review-actions">
+                                                <button class="helpful-btn">
+                                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                                    </svg>
+                                                    Helpful (18)
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-outline btn-block" id="load-more-reviews">Load More Reviews</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sidebar -->
+                        <aside class="course-sidebar">
+                            <div class="sidebar-card sticky">
+                                <div class="sidebar-price">
+                                    <span class="current-price" id="sidebar-price">₹499</span>
+                                    <span class="original-price" id="sidebar-original-price">₹3,999</span>
+                                    <span class="discount-badge" id="sidebar-discount">88% off</span>
+                                </div>
+                                
+                                <div class="sidebar-timer">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    <span><strong>2 days</strong> left at this price!</span>
+                                </div>
+                                
+                                <div class="sidebar-actions">
+                                    <button class="btn btn-primary btn-lg btn-block" id="add-to-cart-btn">
+                                        Add to Cart
+                                    </button>
+                                    <button class="btn btn-outline btn-lg btn-block" id="buy-now-btn">
+                                        Buy Now
+                                    </button>
+                                </div>
+                                
+                                <p class="money-back">30-Day Money-Back Guarantee</p>
+                                
+                                <div class="sidebar-includes">
+                                    <h4>This course includes:</h4>
+                                    <ul>
+                                        <li>
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                            </svg>
+                                            <span id="includes-hours">65 hours</span> on-demand video
+                                        </li>
+                                        <li>
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                            </svg>
+                                            <span id="includes-resources">45</span> downloadable resources
+                                        </li>
+                                        <li>
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                                            </svg>
+                                            Access on mobile & desktop
+                                        </li>
+                                        <li>
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                            </svg>
+                                            <span id="includes-validity">Lifetime</span> access
+                                        </li>
+                                        <li>
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="8" r="7"></circle>
+                                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                                            </svg>
+                                            Certificate of completion
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="sidebar-share">
+                                    <button class="share-btn" id="share-course">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="18" cy="5" r="3"></circle>
+                                            <circle cx="6" cy="12" r="3"></circle>
+                                            <circle cx="18" cy="19" r="3"></circle>
+                                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                        </svg>
+                                        Share
+                                    </button>
+                                    <button class="wishlist-btn" id="wishlist-course">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
+                                        Wishlist
+                                    </button>
+                                </div>
+                                
+                                <div class="coupon-section">
+                                    <input type="text" class="coupon-input" placeholder="Enter coupon code" id="coupon-input">
+                                    <button class="btn btn-ghost" id="apply-coupon">Apply</button>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                    
+                    <!-- Related Courses -->
+                    <section class="related-courses">
+                        <h2>Students Also Bought</h2>
+                        <div class="related-grid" id="related-courses">
+                            <!-- Loaded via JS -->
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                      VIDEO PLAYER PAGE                          -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-player" class="page player-page">
+            <header class="player-header">
+                <button class="back-btn" id="player-back-btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Back to Course</span>
+                </button>
+                <h1 class="player-course-title" id="player-course-title">Course Title</h1>
+                <div class="player-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="course-progress-fill" style="width: 25%"></div>
+                    </div>
+                    <span class="progress-text" id="course-progress-text">25% complete</span>
+                </div>
+            </header>
+            
+            <div class="player-layout">
+                <!-- Video Section -->
+                <div class="player-main">
+                    <div class="video-container" id="video-container">
+                        <!-- Security Overlay -->
+                        <div class="security-overlay" id="security-overlay" style="display: none;">
+                            <div class="security-message">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                                <h3>Developer Tools Detected</h3>
+                                <p>Please close developer tools to continue watching.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Watermark -->
+                        <div class="video-watermark" id="video-watermark">
+                            <span>user@email.com</span>
+                        </div>
+                        
+                        <!-- Video Player -->
+                        <div class="video-wrapper" id="video-wrapper">
+                            <div class="video-loading" id="video-loading">
+                                <div class="spinner"></div>
+                                <p>Loading video...</p>
+                            </div>
+                            <iframe id="youtube-player" 
+                                    src="" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        
+                        <!-- Custom Controls -->
+                        <div class="video-controls" id="video-controls">
+                            <div class="controls-left">
+                                <button class="control-btn" id="prev-lesson-btn" title="Previous Lesson">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                                        <line x1="5" y1="19" x2="5" y2="5"></line>
+                                    </svg>
+                                </button>
+                                <button class="control-btn" id="next-lesson-btn" title="Next Lesson">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                                        <line x1="19" y1="5" x2="19" y2="19"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="controls-center">
+                                <span class="lesson-title" id="current-lesson-title">Lesson Title</span>
+                            </div>
+                            <div class="controls-right">
+                                <div class="speed-control">
+                                    <button class="control-btn speed-btn" id="speed-btn">1x</button>
+                                    <div class="speed-menu" id="speed-menu">
+                                        <button data-speed="0.5">0.5x</button>
+                                        <button data-speed="0.75">0.75x</button>
+                                        <button data-speed="1" class="active">1x</button>
+                                        <button data-speed="1.25">1.25x</button>
+                                        <button data-speed="1.5">1.5x</button>
+                                        <button data-speed="2">2x</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Below Video Content -->
+                    <div class="video-info">
+                        <div class="video-info-header">
+                            <div>
+                                <h2 class="lesson-title" id="lesson-title">Lesson Title</h2>
+                                <p class="lesson-description" id="lesson-description">Lesson description goes here...</p>
+                            </div>
+                            <button class="btn btn-primary" id="mark-complete-btn">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Mark as Complete
+                            </button>
+                        </div>
+                        
+                        <!-- Tabs -->
+                        <div class="video-tabs">
+                            <button class="tab-btn active" data-tab="resources">Resources</button>
+                            <button class="tab-btn" data-tab="notes">My Notes</button>
+                        </div>
+                        
+                        <div class="video-tab-content active" id="resources-tab">
+                            <div class="resources-list" id="resources-list">
+                                <a href="#" class="resource-item">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                    <span>Lesson Source Code.zip</span>
+                                    <span class="resource-size">2.5 MB</span>
+                                </a>
+                                <a href="#" class="resource-item">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                    <span>Cheat Sheet.pdf</span>
+                                    <span class="resource-size">500 KB</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="video-tab-content" id="notes-tab">
+                            <textarea class="notes-textarea" id="lesson-notes" placeholder="Write your notes here..."></textarea>
+                            <button class="btn btn-outline" id="save-notes-btn">Save Notes</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lessons Sidebar -->
+                <aside class="player-sidebar" id="player-sidebar">
+                    <div class="sidebar-header">
+                        <h3>Course Content</h3>
+                        <button class="sidebar-toggle" id="sidebar-toggle">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="sidebar-content" id="lessons-sidebar">
+                        <!-- Lessons loaded via JavaScript -->
+                    </div>
+                </aside>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                        LOGIN PAGE                               -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-login" class="page auth-page">
+            <div class="auth-container">
+                <div class="auth-left">
+                    <div class="auth-form-wrapper">
+                        <a href="#" class="auth-logo" data-page="home">
+                            <span class="logo-icon">🎓</span>
+                            <span class="logo-text">LearnVerse</span>
+                        </a>
+                        
+                        <div class="auth-header">
+                            <h1>Welcome Back!</h1>
+                            <p>Enter your credentials to access your account</p>
+                        </div>
+                        
+                        <form class="auth-form" id="login-form">
+                            <div class="form-group">
+                                <label for="login-email">Email Address</label>
+                                <div class="input-wrapper">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <input type="email" id="login-email" name="email" placeholder="you@example.com" required>
+                                </div>
+                                <span class="error-message" id="login-email-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <div class="input-wrapper">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <input type="password" id="login-password" name="password" placeholder="••••••••" required>
+                                    <button type="button" class="password-toggle" data-target="login-password">
+                                        <svg class="icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span class="error-message" id="login-password-error"></span>
+                            </div>
+                            
+                            <div class="form-row">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="remember" id="remember-me">
+                                    <span class="checkbox-custom"></span>
+                                    <span>Remember me</span>
+                                </label>
+                                <a href="#" class="forgot-link" data-page="forgot-password">Forgot Password?</a>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" id="login-submit">
+                                <span class="btn-text">Sign In</span>
+                                <span class="btn-loader" style="display: none;">
+                                    <span class="spinner-small"></span>
+                                </span>
+                            </button>
+                        </form>
+                        
+                        <div class="auth-divider">
+                            <span>or continue with</span>
+                        </div>
+                        
+                        <button class="btn btn-outline btn-lg btn-block google-btn" id="google-login">
+                            <svg viewBox="0 0 24 24" class="google-icon">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            <span>Continue with Google</span>
+                        </button>
+                        
+                        <p class="auth-footer">
+                            Don't have an account? 
+                            <a href="#" data-page="register">Sign Up</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="auth-right">
+                    <div class="auth-decoration">
+                        <div class="decoration-content">
+                            <h2>Start Learning Today</h2>
+                            <p>Access 50+ premium courses and transform your career</p>
+                            <div class="testimonial-mini">
+                                <img src="https://i.pravatar.cc/100?img=11" alt="Student">
+                                <div>
+                                    <p>"LearnVerse helped me land my dream job at Google!"</p>
+                                    <span>— Rahul S., Software Engineer</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="floating-cards">
+                            <div class="float-card card-1">📚 50+ Courses</div>
+                            <div class="float-card card-2">🎓 Certified</div>
+                            <div class="float-card card-3">💻 Learn Anywhere</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                       REGISTER PAGE                             -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-register" class="page auth-page">
+            <div class="auth-container">
+                <div class="auth-left">
+                    <div class="auth-form-wrapper">
+                        <a href="#" class="auth-logo" data-page="home">
+                            <span class="logo-icon">🎓</span>
+                            <span class="logo-text">LearnVerse</span>
+                        </a>
+                        
+                        <div class="auth-header">
+                            <h1>Create Account</h1>
+                            <p>Join 10,000+ students learning on LearnVerse</p>
+                        </div>
+                        
+                        <form class="auth-form" id="register-form">
+                            <div class="form-group">
+                                <label for="register-name">Full Name</label>
+                                <div class="input-wrapper">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <input type="text" id="register-name" name="name" placeholder="John Doe" required>
+                                </div>
+                                <span class="error-message" id="register-name-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="register-email">Email Address</label>
+                                <div class="input-wrapper">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <input type="email" id="register-email" name="email" placeholder="you@example.com" required>
+                                </div>
+                                <span class="error-message" id="register-email-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="register-phone">Phone Number</label>
+                                <div class="input-wrapper">
+                                    <span class="input-prefix">+91</span>
+                                    <input type="tel" id="register-phone" name="phone" placeholder="9876543210" pattern="[0-9]{10}" required>
+                                </div>
+                                <span class="error-message" id="register-phone-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="register-password">Password</label>
+                                <div class="input-wrapper">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <input type="password" id="register-password" name="password" placeholder="••••••••" required>
+                                    <button type="button" class="password-toggle" data-target="register-password">
+                                        <svg class="icon eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="icon eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="password-strength">
+                                    <div class="strength-bar">
+                                        <div class="strength-fill"></div>
+                                    </div>
+                                    <span class="strength-text">Password strength</span>
+                                </div>
+                                <ul class="password-requirements">
+                                    <li id="req-length"><span class="req-icon">○</span> At least 8 characters</li>
+                                    <li id="req-upper"><span class="req-icon">○</span> One uppercase letter</li>
+                                    <li id="req-lower"><span class="req-icon">○</span> One lowercase letter</li>
+                                    <li id="req-number"><span class="req-icon">○</span> One number</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label terms-checkbox">
+                                    <input type="checkbox" name="terms" id="accept-terms" required>
+                                    <span class="checkbox-custom"></span>
+                                    <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" id="register-submit">
+                                <span class="btn-text">Create Account</span>
+                                <span class="btn-loader" style="display: none;">
+                                    <span class="spinner-small"></span>
+                                </span>
+                            </button>
+                        </form>
+                        
+                        <div class="auth-divider">
+                            <span>or sign up with</span>
+                        </div>
+                        
+                        <button class="btn btn-outline btn-lg btn-block google-btn" id="google-register">
+                            <svg viewBox="0 0 24 24" class="google-icon">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            <span>Continue with Google</span>
+                        </button>
+                        
+                        <p class="auth-footer">
+                            Already have an account? 
+                            <a href="#" data-page="login">Sign In</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="auth-right">
+                    <div class="auth-decoration">
+                        <div class="decoration-content">
+                            <h2>Join Our Community</h2>
+                            <p>Start your learning journey with 10,000+ students worldwide</p>
+                            <div class="stats-mini">
+                                <div class="stat-mini">
+                                    <span class="stat-num">50+</span>
+                                    <span class="stat-label">Courses</span>
+                                </div>
+                                <div class="stat-mini">
+                                    <span class="stat-num">10K+</span>
+                                    <span class="stat-label">Students</span>
+                                </div>
+                                <div class="stat-mini">
+                                    <span class="stat-num">4.9</span>
+                                    <span class="stat-label">Rating</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="floating-cards">
+                            <div class="float-card card-1">🚀 Start Free</div>
+                            <div class="float-card card-2">⭐ 4.9 Rating</div>
+                            <div class="float-card card-3">🔒 Secure</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                       DASHBOARD PAGE                            -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-dashboard" class="page dashboard-page">
+            <div class="dashboard-layout">
+                <!-- Sidebar -->
+                <aside class="dashboard-sidebar" id="dashboard-sidebar">
+                    <div class="sidebar-header">
+                        <a href="#" class="logo" data-page="home">
+                            <span class="logo-icon">🎓</span>
+                            <span class="logo-text">LearnVerse</span>
+                        </a>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
+                        <a href="#" class="sidebar-link active" data-section="overview">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#" class="sidebar-link" data-section="my-courses">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                            <span>My Courses</span>
+                        </a>
+                        <a href="#" class="sidebar-link" data-section="wishlist">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            <span>Wishlist</span>
+                        </a>
+                        <a href="#" class="sidebar-link" data-section="certificates">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="7"></circle>
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                            </svg>
+                            <span>Certificates</span>
+                        </a>
+                        <a href="#" class="sidebar-link" data-section="settings">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Settings</span>
+                        </a>
+                    </nav>
+                    
+                    <div class="sidebar-footer">
+                        <a href="#" class="sidebar-link" data-section="help">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <span>Help & Support</span>
+                        </a>
+                        <button class="sidebar-link logout" id="dashboard-logout">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </aside>
+                
+                <!-- Main Content -->
+                <main class="dashboard-main">
+                    <header class="dashboard-header">
+                        <button class="mobile-sidebar-toggle" id="mobile-sidebar-toggle">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </button>
+                        <div class="header-search">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="M21 21l-4.35-4.35"></path>
+                            </svg>
+                            <input type="text" placeholder="Search your courses...">
+                        </div>
+                        <div class="header-actions">
+                            <button class="notification-btn">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                                <span class="notification-badge">3</span>
+                            </button>
+                            <div class="user-menu-mini">
+                                <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User" class="avatar-sm" id="dashboard-avatar">
+                            </div>
+                        </div>
+                    </header>
+                    
+                    <!-- Dashboard Content Sections -->
+                    <div class="dashboard-content">
+                        <!-- Overview Section -->
+                        <section class="dashboard-section active" id="section-overview">
+                            <div class="welcome-banner">
+                                <div class="welcome-content">
+                                    <h1>Welcome back, <span id="welcome-name">User</span>! 👋</h1>
+                                    <p>Continue your learning journey. You're making great progress!</p>
+                                </div>
+                                <div class="welcome-illustration">
+                                    📚
+                                </div>
+                            </div>
+                            
+                            <div class="stats-cards">
+                                <div class="stat-card">
+                                    <div class="stat-icon blue">📚</div>
+                                    <div class="stat-info">
+                                        <span class="stat-value" id="enrolled-count">0</span>
+                                        <span class="stat-label">Enrolled Courses</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon green">✅</div>
+                                    <div class="stat-info">
+                                        <span class="stat-value" id="completed-count">0</span>
+                                        <span class="stat-label">Completed</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon purple">🎓</div>
+                                    <div class="stat-info">
+                                        <span class="stat-value" id="certificate-count">0</span>
+                                        <span class="stat-label">Certificates</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon orange">⏱️</div>
+                                    <div class="stat-info">
+                                        <span class="stat-value" id="hours-watched">0</span>
+                                        <span class="stat-label">Hours Watched</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <section class="continue-learning">
+                                <div class="section-header">
+                                    <h2>Continue Learning</h2>
+                                    <a href="#" class="view-all" data-section="my-courses">View All</a>
+                                </div>
+                                <div class="continue-grid" id="continue-learning-grid">
+                                    <!-- Loaded via JS -->
+                                    <div class="empty-state" id="no-courses-enrolled" style="display: none;">
+                                        <div class="empty-icon">📚</div>
+                                        <h3>No courses yet</h3>
+                                        <p>Start your learning journey by enrolling in a course</p>
+                                        <button class="btn btn-primary" data-page="courses">Browse Courses</button>
+                                    </div>
+                                </div>
+                            </section>
+                            
+                            <section class="recommended">
+                                <div class="section-header">
+                                    <h2>Recommended for You</h2>
+                                </div>
+                                <div class="recommended-grid" id="recommended-grid">
+                                    <!-- Loaded via JS -->
+                                </div>
+                            </section>
+                        </section>
+                        
+                        <!-- My Courses Section -->
+                        <section class="dashboard-section" id="section-my-courses">
+                            <h2>My Courses</h2>
+                            <div class="courses-filter">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="in-progress">In Progress</button>
+                                <button class="filter-btn" data-filter="completed">Completed</button>
+                            </div>
+                            <div class="my-courses-grid" id="my-courses-grid">
+                                <!-- Loaded via JS -->
+                            </div>
+                        </section>
+                        
+                        <!-- Wishlist Section -->
+                        <section class="dashboard-section" id="section-wishlist">
+                            <h2>My Wishlist</h2>
+                            <div class="wishlist-grid" id="wishlist-grid">
+                                <!-- Loaded via JS -->
+                            </div>
+                        </section>
+                        
+                        <!-- Certificates Section -->
+                        <section class="dashboard-section" id="section-certificates">
+                            <h2>My Certificates</h2>
+                            <div class="certificates-grid" id="certificates-grid">
+                                <!-- Loaded via JS -->
+                            </div>
+                        </section>
+                        
+                        <!-- Settings Section -->
+                        <section class="dashboard-section" id="section-settings">
+                            <h2>Account Settings</h2>
+                            <div class="settings-content">
+                                <div class="settings-card">
+                                    <h3>Profile Information</h3>
+                                    <form class="settings-form" id="profile-form">
+                                        <div class="profile-photo-section">
+                                            <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=150" alt="Profile" class="profile-photo" id="profile-photo">
+                                            <button type="button" class="btn btn-outline btn-sm">Change Photo</button>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Full Name</label>
+                                                <input type="text" id="settings-name" value="">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Email</label>
+                                                <input type="email" id="settings-email" value="" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Phone</label>
+                                                <input type="tel" id="settings-phone" value="">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </form>
+                                </div>
+                                
+                                <div class="settings-card">
+                                    <h3>Change Password</h3>
+                                    <form class="settings-form" id="password-form">
+                                        <div class="form-group">
+                                            <label>Current Password</label>
+                                            <input type="password" id="current-password">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>New Password</label>
+                                            <input type="password" id="new-password">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Confirm New Password</label>
+                                            <input type="password" id="confirm-password">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Update Password</button>
+                                    </form>
+                                </div>
+                                
+                                <div class="settings-card">
+                                    <h3>Logged In Devices</h3>
+                                    <div class="devices-list" id="devices-list">
+                                        <div class="device-item current">
+                                            <div class="device-icon">💻</div>
+                                            <div class="device-info">
+                                                <span class="device-name">Chrome on Windows</span>
+                                                <span class="device-meta">Current session</span>
+                                            </div>
+                                            <span class="device-badge">Active</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="settings-card danger">
+                                    <h3>Danger Zone</h3>
+                                    <p>Once you delete your account, there is no going back. Please be certain.</p>
+                                    <button class="btn btn-danger" id="delete-account-btn">Delete Account</button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                       CHECKOUT PAGE                             -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-checkout" class="page">
+            <section class="checkout-section">
+                <div class="container">
+                    <h1 class="checkout-title">Checkout</h1>
+                    
+                    <div class="checkout-layout">
+                        <div class="checkout-main">
+                            <div class="checkout-card">
+                                <h2>Order Summary</h2>
+                                <div class="cart-items" id="cart-items">
+                                    <!-- Cart items loaded via JS -->
+                                </div>
+                                
+                                <div class="coupon-section">
+                                    <h3>Have a coupon?</h3>
+                                    <div class="coupon-form">
+                                        <input type="text" placeholder="Enter coupon code" id="checkout-coupon">
+                                        <button class="btn btn-outline" id="apply-checkout-coupon">Apply</button>
+                                    </div>
+                                    <p class="coupon-message" id="coupon-message"></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="checkout-sidebar">
+                            <div class="checkout-card">
+                                <h2>Payment Summary</h2>
+                                <div class="price-breakdown">
+                                    <div class="price-row">
+                                        <span>Subtotal</span>
+                                        <span id="checkout-subtotal">₹0</span>
+                                    </div>
+                                    <div class="price-row discount" id="discount-row" style="display: none;">
+                                        <span>Discount</span>
+                                        <span id="checkout-discount">-₹0</span>
+                                    </div>
+                                    <div class="price-row total">
+                                        <span>Total</span>
+                                        <span id="checkout-total">₹0</span>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-primary btn-lg btn-block" id="pay-now-btn">
+                                    <span class="btn-text">Pay Now</span>
+                                    <span class="btn-loader" style="display: none;">
+                                        <span class="spinner-small"></span>
+                                    </span>
+                                </button>
+                                
+                                <div class="security-badges">
+                                    <div class="badge">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        </svg>
+                                        <span>Secure Payment</span>
+                                    </div>
+                                    <div class="badge">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                        <span>30-Day Refund</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-methods">
+                                    <p>We accept:</p>
+                                    <div class="method-icons">
+                                        <span>UPI</span>
+                                        <span>VISA</span>
+                                        <span>MC</span>
+                                        <span>Wallet</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                    PAYMENT SUCCESS PAGE                         -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-success" class="page">
+            <section class="success-section">
+                <div class="container">
+                    <div class="success-card">
+                        <div class="success-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <h1>Payment Successful! 🎉</h1>
+                        <p>Thank you for your purchase. You now have access to your course.</p>
+                        
+                        <div class="order-details">
+                            <h3>Order Details</h3>
+                            <div class="detail-row">
+                                <span>Order ID:</span>
+                                <span id="success-order-id">ORD-XXXXX</span>
+                            </div>
+                            <div class="detail-row">
+                                <span>Course:</span>
+                                <span id="success-course-name">Course Name</span>
+                            </div>
+                            <div class="detail-row">
+                                <span>Amount Paid:</span>
+                                <span id="success-amount">₹499</span>
+                            </div>
+                            <div class="detail-row">
+                                <span>Valid Until:</span>
+                                <span id="success-validity">Lifetime</span>
+                            </div>
+                        </div>
+                        
+                        <div class="success-actions">
+                            <button class="btn btn-primary btn-lg" id="start-learning-btn">
+                                Start Learning Now
+                            </button>
+                            <button class="btn btn-outline" data-page="dashboard">
+                                Go to Dashboard
+                            </button>
+                        </div>
+                        
+                        <p class="receipt-note">A receipt has been sent to your email.</p>
+                    </div>
+                </div>
+                <div class="confetti" id="confetti"></div>
+            </section>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!--                         404 PAGE                                -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <div id="page-404" class="page">
+            <section class="error-section">
+                <div class="container">
+                    <div class="error-content">
+                        <h1 class="error-code">404</h1>
+                        <h2 class="error-title">Page Not Found</h2>
+                        <p class="error-text">Oops! The page you're looking for doesn't exist or has been moved.</p>
+                        <div class="error-actions">
+                            <button class="btn btn-primary" data-page="home">Go Home</button>
+                            <button class="btn btn-outline" data-page="courses">Browse Courses</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--                            FOOTER                                   -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <footer class="footer" id="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="footer-logo" data-page="home">
+                        <span class="logo-icon">🎓</span>
+                        <span class="logo-text">LearnVerse</span>
+                    </a>
+                    <p class="footer-tagline">Transform your future, one course at a time. Join thousands of students learning new skills every day.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="YouTube">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#" data-page="home">Home</a></li>
+                        <li><a href="#" data-page="courses">All Courses</a></li>
+                        <li><a href="about.html" data-page="about">About Us</a></li>
+                        <li><a href="contact.html" data-page="contact">Contact</a></li>
+                        <li><a href="contact.html">Become an Instructor</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="#" data-category="development">Development</a></li>
+                        <li><a href="#" data-category="design">Design</a></li>
+                        <li><a href="#" data-category="marketing">Marketing</a></li>
+                        <li><a href="#" data-category="business">Business</a></li>
+                        <li><a href="#" data-category="photography">Photography</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li>
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <a href="mailto:support@learnverse.com">support@learnverse.com</a>
+                        </li>
+                        <li>
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            <a href="tel:+919876543210">+91 98765 43210</a>
+                        </li>
+                        <li>
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span>Bangalore, India</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year">2024</span> LearnVerse Academy. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"></path>
+        </svg>
+    </button>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--                           MODALS                                    -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    
+    <!-- Video Preview Modal -->
+    <div class="modal" id="video-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-lg">
+            <button class="modal-close" aria-label="Close modal">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+            </button>
+            <div class="modal-body">
+                <div class="video-wrapper">
+                    <iframe id="modal-video" src="" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Share Modal -->
+    <div class="modal" id="share-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share this course</h3>
+                <button class="modal-close" aria-label="Close modal">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="share-options">
+                    <button class="share-option" data-share="whatsapp">
+                        <span class="share-icon">📱</span>
+                        <span>WhatsApp</span>
+                    </button>
+                    <button class="share-option" data-share="twitter">
+                        <span class="share-icon">🐦</span>
+                        <span>Twitter</span>
+                    </button>
+                    <button class="share-option" data-share="facebook">
+                        <span class="share-icon">📘</span>
+                        <span>Facebook</span>
+                    </button>
+                    <button class="share-option" data-share="linkedin">
+                        <span class="share-icon">💼</span>
+                        <span>LinkedIn</span>
+                    </button>
+                    <button class="share-option" data-share="copy">
+                        <span class="share-icon">🔗</span>
+                        <span>Copy Link</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirm Modal -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3 id="confirm-title">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="confirm-cancel">Cancel</button>
+                <button class="btn btn-danger" id="confirm-proceed">Proceed</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--                         TOAST CONTAINER                             -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Main Script -->
+    <script src="script.js"></script>
+    
+    <!-- Razorpay Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</body>
+</html>
