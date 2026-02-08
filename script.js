@@ -10,7 +10,7 @@
 
 const CONFIG = {
     // Google Apps Script Web App URL (Replace with your deployed URL)
-    API_URL: 'https://script.google.com/macros/s/AKfycbzDh1cNC3k90yc2iXrWC2KzeurzgmBo_oGeZCRc_a3n3P1UDFod--DLYij92jxSRgHY/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbz0d3HVb6s2fsXKtgEqbzfNwcVSP35XOwlPbGwACtZIf95k2c14pSMPCXhzK7PRmbhL/exec',
     
     // Razorpay Key ID (Replace with your key - use test key for testing)
     RAZORPAY_KEY_ID: 'rzp_test_SDJVf0FkMO5XxH',
@@ -3095,3 +3095,4 @@ window.Toast = Toast;
 window.Modal = Modal;
 window.Wishlist = Wishlist;
 window.Search = Search;
+
