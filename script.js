@@ -1,600 +1,370 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   LEARNVERSE ACADEMY - COMPLETE JAVASCRIPT
-   Premium Course Selling Platform
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FILE: script.js
+   LearnVerse Academy - Complete JavaScript Application
+   SPA Router, API Integration, Authentication, Video Player, Payments
+═══════════════════════════════════════════════════════════════════════════════ */
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   1. CONFIGURATION
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const CONFIG = {
     // Google Apps Script Web App URL (Replace with your deployed URL)
-    API_URL: 'https://odd-poetry-8be4.erabhi186.workers.dev/',
+    API_URL: 'https://script.google.com/macros/s/AKfycbzDh1cNC3k90yc2iXrWC2KzeurzgmBo_oGeZCRc_a3n3P1UDFod--DLYij92jxSRgHY/exec',
     
-    // Razorpay Key ID (Replace with your key)
-    RAZORPAY_KEY: 'rzp_test_SDJVf0FkMO5XxH',
+    // Razorpay Key ID (Replace with your key - use test key for testing)
+    RAZORPAY_KEY_ID: 'rzp_test_SDJVf0FkMO5XxH',
     
-    // App Settings
-    APP_NAME: 'LearnVerse Academy',
+    // Site Settings
+    SITE_NAME: 'LearnVerse Academy',
+    SITE_URL: 'https://learnverse.academy',
     CURRENCY: 'INR',
     CURRENCY_SYMBOL: '₹',
     
-    // Token Settings
-    TOKEN_EXPIRY: 5 * 60 * 1000, // 5 minutes in milliseconds
-    SESSION_EXPIRY: 24 * 60 * 60 * 1000, // 24 hours
+    // Video Token Expiry (in minutes)
+    VIDEO_TOKEN_EXPIRY: 5,
     
-    // Pagination
-    ITEMS_PER_PAGE: 12,
-    
-    // Video Settings
+    // Max Devices per User
     MAX_DEVICES: 2,
-    WATERMARK_INTERVAL: 30000, // 30 seconds
     
-    // Demo Mode (set to true for testing without backend)
-    DEMO_MODE: false
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   2. STATE MANAGEMENT
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const State = {
-    // User State
-    user: null,
-    isAuthenticated: false,
+    // Demo Mode (uses local data instead of API)
+    DEMO_MODE: false,
     
-    // Current Page
-    currentPage: 'home',
-    previousPage: null,
-    
-    // Course Data
-    courses: [],
-    featuredCourses: [],
-    currentCourse: null,
-    
-    // Cart & Wishlist
-    cart: [],
-    wishlist: [],
-    
-    // Enrollments
-    enrollments: [],
-    
-    // Filters
-    filters: {
-        category: [],
-        level: [],
-        duration: [],
-        rating: null,
-        priceRange: 5000,
-        search: '',
-        sort: 'popular'
-    },
-    
-    // Pagination
-    currentPageNum: 1,
-    totalPages: 1,
-    
-    // Video Player
-    currentLesson: null,
-    currentSection: 0,
-    videoToken: null,
-    
-    // UI State
-    isLoading: false,
-    isMobileMenuOpen: false,
-    isSearchOpen: false,
-    
-    // Initialize state from localStorage
-    init() {
-        const savedUser = localStorage.getItem('learnverse_user');
-        const savedCart = localStorage.getItem('learnverse_cart');
-        const savedWishlist = localStorage.getItem('learnverse_wishlist');
-        const savedTheme = localStorage.getItem('learnverse_theme');
-        
-        if (savedUser) {
-            try {
-                this.user = JSON.parse(savedUser);
-                this.isAuthenticated = true;
-            } catch (e) {
-                localStorage.removeItem('learnverse_user');
-            }
-        }
-        
-        if (savedCart) {
-            try {
-                this.cart = JSON.parse(savedCart);
-            } catch (e) {
-                localStorage.removeItem('learnverse_cart');
-            }
-        }
-        
-        if (savedWishlist) {
-            try {
-                this.wishlist = JSON.parse(savedWishlist);
-            } catch (e) {
-                localStorage.removeItem('learnverse_wishlist');
-            }
-        }
-        
-        if (savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        }
-    },
-    
-    // Save user to localStorage
-    saveUser() {
-        if (this.user) {
-            localStorage.setItem('learnverse_user', JSON.stringify(this.user));
-        } else {
-            localStorage.removeItem('learnverse_user');
-        }
-    },
-    
-    // Save cart to localStorage
-    saveCart() {
-        localStorage.setItem('learnverse_cart', JSON.stringify(this.cart));
-    },
-    
-    // Save wishlist to localStorage
-    saveWishlist() {
-        localStorage.setItem('learnverse_wishlist', JSON.stringify(this.wishlist));
+    // Local Storage Keys
+    STORAGE_KEYS: {
+        TOKEN: 'lv_auth_token',
+        USER: 'lv_user',
+        THEME: 'lv_theme',
+        DEVICE_ID: 'lv_device_id',
+        WISHLIST: 'lv_wishlist',
+        CART: 'lv_cart'
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   3. DEMO DATA (For testing without backend)
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// DEMO DATA (Used when DEMO_MODE is true)
+// ═══════════════════════════════════════════════════════════════════════════════
 
-const DemoData = {
+const DEMO_DATA = {
     courses: [
         {
             id: 'course_001',
             title: 'Complete Web Development Bootcamp 2024',
             slug: 'complete-web-development-bootcamp',
-            shortDescription: 'Learn HTML, CSS, JavaScript, React, Node.js and become a full-stack developer',
-            description: `<p>Welcome to the Complete Web Development Bootcamp! This is the only course you need to learn web development and become a full-stack developer.</p>
-            <p>With over 65 hours of HD video content, this course covers everything from basic HTML to advanced React.js and Node.js concepts. You'll build real projects that you can add to your portfolio.</p>
-            <p>Whether you're a complete beginner or have some programming experience, this course will take your skills to the next level.</p>`,
-            price: 499,
-            originalPrice: 3999,
-            discount: 88,
-            thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop',
-            instructor: 'Vikram Singh',
-            instructorImage: 'https://i.pravatar.cc/200?img=12',
-            instructorBio: 'Full Stack Developer with 10+ years of experience at Amazon & Microsoft. Taught 50,000+ students worldwide.',
+            shortDescription: 'Learn HTML, CSS, JavaScript, React, Node.js and more!',
+            description: `<p>Become a full-stack web developer with this comprehensive bootcamp. This course covers everything from the basics of HTML and CSS to advanced React and Node.js development.</p>
+            <p>You'll build real-world projects and gain hands-on experience with modern web technologies.</p>`,
+            price: 4999,
+            discountPrice: 999,
+            thumbnail: '',
             category: 'development',
             level: 'beginner',
             language: 'Hindi & English',
-            totalLessons: 156,
-            totalDuration: '65h 30m',
-            rating: 4.9,
-            reviewCount: 2456,
-            enrolledCount: 12345,
+            instructor: 'Vikas Kumar',
+            instructorImage: '',
+            instructorBio: 'Senior Software Engineer with 10+ years experience. Previously worked at Google and Microsoft.',
+            totalLessons: 150,
+            totalDuration: '45 hours',
             validity: 365,
+            rating: 4.8,
+            reviewCount: 1250,
+            enrolledCount: 5420,
+            requirements: ['Basic computer knowledge', 'No programming experience needed', 'A computer with internet'],
+            whatYouLearn: [
+                'Build responsive websites from scratch',
+                'Master JavaScript and modern ES6+ features',
+                'Create full-stack applications with React and Node.js',
+                'Work with databases like MongoDB',
+                'Deploy your applications to the cloud',
+                'Build a professional portfolio'
+            ],
             isFeatured: true,
             isPublished: true,
-            whatYouLearn: [
-                'Build 16+ real-world projects',
-                'Master HTML, CSS, and JavaScript',
-                'Learn React.js from scratch',
-                'Build backend with Node.js & Express',
-                'Work with MongoDB database',
-                'Deploy websites to the cloud'
-            ],
-            requirements: [
-                'No programming experience needed',
-                'A computer with internet access',
-                'Eagerness to learn'
-            ],
-            targetAudience: [
-                'Anyone who wants to learn web development',
-                'Beginners with no coding experience',
-                'Developers looking to expand their skills'
-            ],
-            updatedAt: '2024-01-15'
+            sections: [
+                {
+                    id: 'sec_001',
+                    title: 'Getting Started',
+                    order: 1,
+                    lessons: [
+                        { id: 'les_001', title: 'Welcome to the Course', duration: '5:30', isFree: true, youtubeId: 'dQw4w9WgXcQ' },
+                        { id: 'les_002', title: 'How to Get the Most Out of This Course', duration: '8:15', isFree: true, youtubeId: 'dQw4w9WgXcQ' },
+                        { id: 'les_003', title: 'Setting Up Your Development Environment', duration: '15:00', isFree: false, youtubeId: 'dQw4w9WgXcQ' }
+                    ]
+                },
+                {
+                    id: 'sec_002',
+                    title: 'HTML Fundamentals',
+                    order: 2,
+                    lessons: [
+                        { id: 'les_004', title: 'Introduction to HTML', duration: '12:00', isFree: false, youtubeId: 'dQw4w9WgXcQ' },
+                        { id: 'les_005', title: 'HTML Document Structure', duration: '10:30', isFree: false, youtubeId: 'dQw4w9WgXcQ' },
+                        { id: 'les_006', title: 'Working with Text Elements', duration: '14:00', isFree: false, youtubeId: 'dQw4w9WgXcQ' },
+                        { id: 'les_007', title: 'Links and Images', duration: '11:00', isFree: false, youtubeId: 'dQw4w9WgXcQ' }
+                    ]
+                },
+                {
+                    id: 'sec_003',
+                    title: 'CSS Styling',
+                    order: 3,
+                    lessons: [
+                        { id: 'les_008', title: 'Introduction to CSS', duration: '10:00', isFree: false, youtubeId: 'dQw4w9WgXcQ' },
+                        { id: 'les_009', title: 'Selectors and Properties', duration: '15:00', isFree: false, youtubeId: 'dQw4w9WgXcQ' },
+                        { id: 'les_010', title: 'Box Model Deep Dive', duration: '12:00', isFree: false, youtubeId: 'dQw4w9WgXcQ' }
+                    ]
+                }
+            ]
         },
         {
             id: 'course_002',
             title: 'UI/UX Design Masterclass',
             slug: 'ui-ux-design-masterclass',
-            shortDescription: 'Master UI/UX design from scratch using Figma, Adobe XD and design principles',
-            description: '<p>Learn to design beautiful and functional user interfaces. This course covers everything from design fundamentals to advanced prototyping.</p>',
-            price: 399,
-            originalPrice: 2999,
-            discount: 87,
-            thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop',
-            instructor: 'Aishwarya Rao',
-            instructorImage: 'https://i.pravatar.cc/200?img=25',
-            instructorBio: 'Former Design Lead at Swiggy. Passionate about creating beautiful user experiences.',
+            shortDescription: 'Master Figma and create stunning user interfaces',
+            description: '<p>Learn professional UI/UX design from scratch. Master Figma, design systems, user research, and create portfolio-worthy projects.</p>',
+            price: 3999,
+            discountPrice: 799,
+            thumbnail: '',
             category: 'design',
             level: 'beginner',
-            language: 'English',
-            totalLessons: 89,
-            totalDuration: '32h 15m',
-            rating: 4.8,
-            reviewCount: 1823,
-            enrolledCount: 8765,
+            language: 'Hindi',
+            instructor: 'Neha Singh',
+            instructorImage: '',
+            instructorBio: 'Lead Designer at Figma with 8+ years of experience in product design.',
+            totalLessons: 85,
+            totalDuration: '28 hours',
             validity: 365,
+            rating: 4.9,
+            reviewCount: 890,
+            enrolledCount: 3200,
+            requirements: ['No design experience needed', 'Computer with Figma installed (free)'],
+            whatYouLearn: [
+                'Master Figma from basics to advanced',
+                'Understand UI/UX design principles',
+                'Create design systems',
+                'Build mobile and web app designs',
+                'Conduct user research',
+                'Create a professional portfolio'
+            ],
             isFeatured: true,
             isPublished: true,
-            whatYouLearn: [
-                'Design stunning user interfaces',
-                'Master Figma and Adobe XD',
-                'Create interactive prototypes',
-                'Understand UX research methods',
-                'Build a professional portfolio'
-            ],
-            requirements: [
-                'No prior design experience required',
-                'Access to Figma (free)'
-            ],
-            targetAudience: [
-                'Aspiring UI/UX designers',
-                'Developers wanting design skills',
-                'Entrepreneurs and product managers'
-            ],
-            updatedAt: '2024-01-10'
+            sections: [
+                {
+                    id: 'sec_101',
+                    title: 'Introduction to Design',
+                    order: 1,
+                    lessons: [
+                        { id: 'les_101', title: 'Welcome to UI/UX Design', duration: '6:00', isFree: true, youtubeId: 'dQw4w9WgXcQ' },
+                        { id: 'les_102', title: 'Setting Up Figma', duration: '10:00', isFree: true, youtubeId: 'dQw4w9WgXcQ' }
+                    ]
+                }
+            ]
         },
         {
             id: 'course_003',
-            title: 'Digital Marketing Pro',
-            slug: 'digital-marketing-pro',
-            shortDescription: 'Complete digital marketing course covering SEO, SEM, Social Media, and Analytics',
-            description: '<p>Become a digital marketing expert. Learn SEO, Google Ads, Facebook Ads, Social Media Marketing, Email Marketing, and more.</p>',
-            price: 599,
-            originalPrice: 4999,
-            discount: 88,
-            thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop',
-            instructor: 'Karthik Menon',
-            instructorImage: 'https://i.pravatar.cc/200?img=33',
-            instructorBio: 'Helped 100+ brands grow online. Google & Facebook certified professional.',
+            title: 'Digital Marketing Complete Course',
+            slug: 'digital-marketing-complete',
+            shortDescription: 'SEO, Social Media, Google Ads, Facebook Ads & more',
+            description: '<p>Comprehensive digital marketing course covering all aspects of online marketing.</p>',
+            price: 2999,
+            discountPrice: 599,
+            thumbnail: '',
             category: 'marketing',
-            level: 'intermediate',
+            level: 'beginner',
             language: 'Hindi & English',
-            totalLessons: 124,
-            totalDuration: '48h 45m',
-            rating: 4.7,
-            reviewCount: 1456,
-            enrolledCount: 6543,
+            instructor: 'Amit Patel',
+            instructorImage: '',
+            instructorBio: 'Digital Marketing Expert with experience at major agencies.',
+            totalLessons: 120,
+            totalDuration: '35 hours',
             validity: 365,
-            isFeatured: true,
-            isPublished: true,
+            rating: 4.7,
+            reviewCount: 650,
+            enrolledCount: 2800,
+            requirements: ['Basic internet knowledge'],
             whatYouLearn: [
                 'Master SEO and rank on Google',
-                'Run profitable Google Ads campaigns',
-                'Create viral social media content',
-                'Build email marketing funnels',
-                'Analyze data with Google Analytics'
+                'Run effective Google Ads campaigns',
+                'Social media marketing strategies',
+                'Email marketing automation',
+                'Content marketing',
+                'Analytics and reporting'
             ],
-            requirements: [
-                'Basic computer skills',
-                'Willingness to learn'
-            ],
-            targetAudience: [
-                'Marketing professionals',
-                'Business owners',
-                'Freelancers'
-            ],
-            updatedAt: '2024-01-12'
+            isFeatured: true,
+            isPublished: true,
+            sections: []
         },
         {
             id: 'course_004',
-            title: 'Python for Data Science & AI',
-            slug: 'python-data-science-ai',
-            shortDescription: 'Learn Python programming for Data Science, Machine Learning, and Artificial Intelligence',
-            description: '<p>Master Python for data science and AI. This course covers Python basics to advanced machine learning algorithms.</p>',
-            price: 699,
-            originalPrice: 5999,
-            discount: 88,
-            thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=450&fit=crop',
-            instructor: 'Neha Gupta',
-            instructorImage: 'https://i.pravatar.cc/200?img=45',
-            instructorBio: 'PhD from IIT. Working on AI/ML at leading tech companies for 8+ years.',
-            category: 'development',
+            title: 'Data Science with Python',
+            slug: 'data-science-python',
+            shortDescription: 'Python, Pandas, NumPy, Machine Learning & AI',
+            description: '<p>Learn data science and machine learning with Python.</p>',
+            price: 5999,
+            discountPrice: 1299,
+            thumbnail: '',
+            category: 'data-science',
             level: 'intermediate',
             language: 'English',
-            totalLessons: 185,
-            totalDuration: '72h 30m',
-            rating: 4.9,
-            reviewCount: 2134,
-            enrolledCount: 9876,
+            instructor: 'Raj Patel',
+            instructorImage: '',
+            instructorBio: 'ML Engineer at Microsoft with PhD in AI.',
+            totalLessons: 180,
+            totalDuration: '55 hours',
             validity: 365,
+            rating: 4.8,
+            reviewCount: 420,
+            enrolledCount: 1850,
+            requirements: ['Basic Python knowledge', 'Basic math understanding'],
+            whatYouLearn: [
+                'Python programming for data science',
+                'Data analysis with Pandas and NumPy',
+                'Data visualization',
+                'Machine learning algorithms',
+                'Deep learning basics',
+                'Real-world projects'
+            ],
             isFeatured: true,
             isPublished: true,
-            whatYouLearn: [
-                'Python programming from scratch',
-                'Data analysis with Pandas & NumPy',
-                'Data visualization with Matplotlib',
-                'Machine Learning with Scikit-learn',
-                'Deep Learning with TensorFlow'
-            ],
-            requirements: [
-                'Basic math knowledge',
-                'No programming experience needed'
-            ],
-            targetAudience: [
-                'Aspiring data scientists',
-                'Analysts wanting to upgrade skills',
-                'Developers interested in AI/ML'
-            ],
-            updatedAt: '2024-01-14'
+            sections: []
         },
         {
             id: 'course_005',
-            title: 'Business Strategy & Entrepreneurship',
-            slug: 'business-strategy-entrepreneurship',
-            shortDescription: 'Learn to build and scale a successful business from scratch',
-            description: '<p>Learn proven business strategies to launch, grow, and scale your startup or business.</p>',
-            price: 799,
-            originalPrice: 6999,
-            discount: 89,
-            thumbnail: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=450&fit=crop',
-            instructor: 'Arjun Kapoor',
-            instructorImage: 'https://i.pravatar.cc/200?img=52',
-            instructorBio: 'Serial entrepreneur with 3 successful exits. Investor and mentor.',
-            category: 'business',
-            level: 'advanced',
-            language: 'Hindi & English',
-            totalLessons: 78,
-            totalDuration: '28h 15m',
-            rating: 4.8,
-            reviewCount: 987,
-            enrolledCount: 4321,
-            validity: 365,
-            isFeatured: false,
-            isPublished: true,
-            whatYouLearn: [
-                'Develop a winning business idea',
-                'Create a solid business plan',
-                'Raise funding for your startup',
-                'Build and lead a great team',
-                'Scale your business successfully'
-            ],
-            requirements: [
-                'Basic business understanding',
-                'Entrepreneurial mindset'
-            ],
-            targetAudience: [
-                'Aspiring entrepreneurs',
-                'Small business owners',
-                'Startup founders'
-            ],
-            updatedAt: '2024-01-08'
-        },
-        {
-            id: 'course_006',
-            title: 'Photography Masterclass',
-            slug: 'photography-masterclass',
-            shortDescription: 'Learn professional photography from basic to advanced techniques',
-            description: '<p>Master the art of photography. From camera settings to post-processing, learn everything you need.</p>',
-            price: 449,
-            originalPrice: 3499,
-            discount: 87,
-            thumbnail: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&h=450&fit=crop',
-            instructor: 'Ravi Sharma',
-            instructorImage: 'https://i.pravatar.cc/200?img=57',
-            instructorBio: 'Award-winning photographer with 15+ years of experience.',
-            category: 'photography',
-            level: 'beginner',
-            language: 'Hindi',
-            totalLessons: 65,
-            totalDuration: '24h 30m',
-            rating: 4.7,
-            reviewCount: 876,
-            enrolledCount: 3456,
-            validity: 365,
-            isFeatured: false,
-            isPublished: true,
-            whatYouLearn: [
-                'Understand camera settings',
-                'Master composition techniques',
-                'Work with natural and artificial light',
-                'Edit photos professionally',
-                'Build your photography business'
-            ],
-            requirements: [
-                'Any camera (DSLR or smartphone)'
-            ],
-            targetAudience: [
-                'Photography enthusiasts',
-                'Aspiring professional photographers',
-                'Content creators'
-            ],
-            updatedAt: '2024-01-05'
-        },
-        {
-            id: 'course_007',
-            title: 'React.js Complete Guide',
-            slug: 'reactjs-complete-guide',
-            shortDescription: 'Master React.js including Hooks, Redux, and Next.js',
-            description: '<p>Become a React.js expert. Learn everything from basics to advanced patterns including hooks, context, and Redux.</p>',
-            price: 549,
-            originalPrice: 4499,
-            discount: 88,
-            thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=450&fit=crop',
-            instructor: 'Vikram Singh',
-            instructorImage: 'https://i.pravatar.cc/200?img=12',
-            instructorBio: 'Full Stack Developer with 10+ years of experience at Amazon & Microsoft.',
+            title: 'React Native Mobile App Development',
+            slug: 'react-native-mobile-development',
+            shortDescription: 'Build iOS & Android apps with React Native',
+            description: '<p>Create cross-platform mobile applications using React Native.</p>',
+            price: 4499,
+            discountPrice: 899,
+            thumbnail: '',
             category: 'development',
             level: 'intermediate',
             language: 'Hindi & English',
-            totalLessons: 142,
-            totalDuration: '52h 15m',
-            rating: 4.9,
-            reviewCount: 1876,
-            enrolledCount: 7654,
+            instructor: 'Vikas Kumar',
+            instructorImage: '',
+            instructorBio: 'Senior Software Engineer with 10+ years experience.',
+            totalLessons: 95,
+            totalDuration: '32 hours',
             validity: 365,
-            isFeatured: true,
-            isPublished: true,
+            rating: 4.6,
+            reviewCount: 380,
+            enrolledCount: 1420,
+            requirements: ['JavaScript knowledge', 'React basics helpful'],
             whatYouLearn: [
-                'React.js fundamentals and JSX',
-                'React Hooks in depth',
-                'State management with Redux',
-                'Server-side rendering with Next.js',
-                'Testing React applications'
+                'React Native fundamentals',
+                'Build iOS and Android apps',
+                'Navigation and routing',
+                'State management',
+                'Native modules',
+                'App deployment'
             ],
-            requirements: [
-                'Basic JavaScript knowledge',
-                'HTML & CSS fundamentals'
-            ],
-            targetAudience: [
-                'JavaScript developers',
-                'Frontend developers',
-                'Full-stack developers'
-            ],
-            updatedAt: '2024-01-13'
-        },
-        {
-            id: 'course_008',
-            title: 'Financial Planning & Investment',
-            slug: 'financial-planning-investment',
-            shortDescription: 'Learn personal finance, investing in stocks, mutual funds, and building wealth',
-            description: '<p>Take control of your finances. Learn to budget, invest, and build long-term wealth.</p>',
-            price: 399,
-            originalPrice: 2999,
-            discount: 87,
-            thumbnail: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=450&fit=crop',
-            instructor: 'Deepak Verma',
-            instructorImage: 'https://i.pravatar.cc/200?img=60',
-            instructorBio: 'Certified Financial Planner with 12+ years in wealth management.',
-            category: 'finance',
-            level: 'beginner',
-            language: 'Hindi',
-            totalLessons: 56,
-            totalDuration: '18h 45m',
-            rating: 4.8,
-            reviewCount: 1234,
-            enrolledCount: 5432,
-            validity: 365,
             isFeatured: false,
             isPublished: true,
+            sections: []
+        },
+        {
+            id: 'course_006',
+            title: 'Business Strategy & Management',
+            slug: 'business-strategy-management',
+            shortDescription: 'MBA-level business concepts for entrepreneurs',
+            description: '<p>Learn essential business strategies and management skills.</p>',
+            price: 3499,
+            discountPrice: 699,
+            thumbnail: '',
+            category: 'business',
+            level: 'beginner',
+            language: 'Hindi',
+            instructor: 'Priya Sharma',
+            instructorImage: '',
+            instructorBio: 'Business consultant and former McKinsey analyst.',
+            totalLessons: 60,
+            totalDuration: '18 hours',
+            validity: 180,
+            rating: 4.5,
+            reviewCount: 290,
+            enrolledCount: 980,
+            requirements: ['Interest in business'],
             whatYouLearn: [
-                'Personal budgeting and savings',
-                'Stock market investing',
-                'Mutual funds and SIPs',
-                'Tax planning strategies',
-                'Retirement planning'
+                'Business strategy frameworks',
+                'Financial management basics',
+                'Marketing fundamentals',
+                'Leadership skills',
+                'Operations management',
+                'Business planning'
             ],
-            requirements: [
-                'No prior financial knowledge needed'
-            ],
-            targetAudience: [
-                'Anyone wanting to improve finances',
-                'Young professionals',
-                'Parents planning for future'
-            ],
-            updatedAt: '2024-01-09'
-        }
-    ],
-    
-    lessons: {
-        'course_001': [
-            {
-                sectionTitle: 'Getting Started',
-                sectionOrder: 1,
-                lessons: [
-                    { id: 'lesson_001', title: 'Welcome to the Course', duration: '5:30', youtubeId: 'dQw4w9WgXcQ', isFree: true, order: 1 },
-                    { id: 'lesson_002', title: 'Setting Up Your Environment', duration: '12:45', youtubeId: 'dQw4w9WgXcQ', isFree: true, order: 2 },
-                    { id: 'lesson_003', title: 'Your First HTML Page', duration: '15:20', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 3 },
-                    { id: 'lesson_004', title: 'Understanding Code Editors', duration: '10:15', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 4 },
-                    { id: 'lesson_005', title: 'Browser Developer Tools', duration: '8:30', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 5 }
-                ]
-            },
-            {
-                sectionTitle: 'HTML Fundamentals',
-                sectionOrder: 2,
-                lessons: [
-                    { id: 'lesson_006', title: 'HTML Document Structure', duration: '14:20', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 1 },
-                    { id: 'lesson_007', title: 'Text Elements and Formatting', duration: '18:30', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 2 },
-                    { id: 'lesson_008', title: 'Links and Navigation', duration: '12:15', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 3 },
-                    { id: 'lesson_009', title: 'Images and Media', duration: '16:45', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 4 },
-                    { id: 'lesson_010', title: 'Tables and Lists', duration: '20:10', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 5 },
-                    { id: 'lesson_011', title: 'Forms and Input Elements', duration: '25:30', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 6 },
-                    { id: 'lesson_012', title: 'Semantic HTML5', duration: '15:45', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 7 }
-                ]
-            },
-            {
-                sectionTitle: 'CSS Styling',
-                sectionOrder: 3,
-                lessons: [
-                    { id: 'lesson_013', title: 'Introduction to CSS', duration: '12:30', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 1 },
-                    { id: 'lesson_014', title: 'Selectors and Specificity', duration: '18:45', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 2 },
-                    { id: 'lesson_015', title: 'Box Model Deep Dive', duration: '22:15', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 3 },
-                    { id: 'lesson_016', title: 'Flexbox Layout', duration: '28:30', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 4 },
-                    { id: 'lesson_017', title: 'CSS Grid Layout', duration: '32:20', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 5 },
-                    { id: 'lesson_018', title: 'Responsive Design', duration: '24:15', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 6 }
-                ]
-            },
-            {
-                sectionTitle: 'JavaScript Basics',
-                sectionOrder: 4,
-                lessons: [
-                    { id: 'lesson_019', title: 'Introduction to JavaScript', duration: '15:30', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 1 },
-                    { id: 'lesson_020', title: 'Variables and Data Types', duration: '20:45', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 2 },
-                    { id: 'lesson_021', title: 'Functions and Scope', duration: '25:15', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 3 },
-                    { id: 'lesson_022', title: 'Arrays and Objects', duration: '28:30', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 4 },
-                    { id: 'lesson_023', title: 'DOM Manipulation', duration: '32:20', youtubeId: 'dQw4w9WgXcQ', isFree: false, order: 5 }
-                ]
-            }
-        ]
-    },
-    
-    reviews: [
-        {
-            id: 'review_001',
-            courseId: 'course_001',
-            userId: 'user_001',
-            userName: 'Ankit Verma',
-            userImage: 'https://i.pravatar.cc/100?img=15',
-            rating: 5,
-            reviewText: 'This course is absolutely fantastic! Vikram explains everything so clearly and the projects are really helpful for building a portfolio. Highly recommended for anyone starting their web development journey.',
-            createdAt: '2024-01-10',
-            helpful: 24
-        },
-        {
-            id: 'review_002',
-            courseId: 'course_001',
-            userId: 'user_002',
-            userName: 'Priya Sharma',
-            userImage: 'https://i.pravatar.cc/100?img=20',
-            rating: 5,
-            reviewText: 'Best web development course I\'ve ever taken! The progression from basics to advanced topics is perfect. I\'m now working as a frontend developer thanks to this course.',
-            createdAt: '2024-01-05',
-            helpful: 18
-        },
-        {
-            id: 'review_003',
-            courseId: 'course_001',
-            userId: 'user_003',
-            userName: 'Rohit Kumar',
-            userImage: 'https://i.pravatar.cc/100?img=22',
-            rating: 4,
-            reviewText: 'Great content and well-structured course. The only thing I would like is more advanced topics. Overall, an excellent course for beginners.',
-            createdAt: '2023-12-28',
-            helpful: 12
+            isFeatured: false,
+            isPublished: true,
+            sections: []
         }
     ],
     
     categories: [
         { id: 'development', name: 'Development', icon: '💻', count: 15 },
-        { id: 'design', name: 'Design', icon: '🎨', count: 12 },
-        { id: 'marketing', name: 'Marketing', icon: '📈', count: 10 },
-        { id: 'business', name: 'Business', icon: '💼', count: 8 },
-        { id: 'photography', name: 'Photography', icon: '📷', count: 6 },
-        { id: 'music', name: 'Music', icon: '🎵', count: 5 },
-        { id: 'finance', name: 'Finance', icon: '💰', count: 7 },
-        { id: 'fitness', name: 'Health & Fitness', icon: '💪', count: 4 }
+        { id: 'design', name: 'Design', icon: '🎨', count: 10 },
+        { id: 'marketing', name: 'Marketing', icon: '📈', count: 8 },
+        { id: 'business', name: 'Business', icon: '💼', count: 12 },
+        { id: 'data-science', name: 'Data Science', icon: '📊', count: 7 },
+        { id: 'mobile', name: 'Mobile Dev', icon: '📱', count: 5 }
+    ],
+    
+    reviews: [
+        {
+            id: 'rev_001',
+            courseId: 'course_001',
+            userId: 'user_001',
+            userName: 'Rahul Kumar',
+            rating: 5,
+            text: 'Amazing course! The instructor explains everything so clearly. I went from zero coding knowledge to building full-stack apps.',
+            date: '2024-01-15'
+        },
+        {
+            id: 'rev_002',
+            courseId: 'course_001',
+            userId: 'user_002',
+            userName: 'Priya Sharma',
+            rating: 5,
+            text: 'Best investment I made in my career. The projects are practical and industry-relevant.',
+            date: '2024-01-10'
+        },
+        {
+            id: 'rev_003',
+            courseId: 'course_001',
+            userId: 'user_003',
+            userName: 'Amit Singh',
+            rating: 4,
+            text: 'Great content, very comprehensive. Would love more advanced topics.',
+            date: '2024-01-05'
+        }
+    ],
+    
+    coupons: [
+        { code: 'WELCOME50', discountType: 'percent', discountValue: 50, minPurchase: 500 },
+        { code: 'FLAT200', discountType: 'fixed', discountValue: 200, minPurchase: 1000 },
+        { code: 'NEWYEAR', discountType: 'percent', discountValue: 30, minPurchase: 0 }
     ]
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   4. UTILITY FUNCTIONS
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// UTILITY FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const Utils = {
-    // Format price with currency
-    formatPrice(price) {
-        return `${CONFIG.CURRENCY_SYMBOL}${price.toLocaleString('en-IN')}`;
+    // Generate unique ID
+    generateId(prefix = 'id') {
+        return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    },
+    
+    // Generate device fingerprint
+    generateDeviceId() {
+        const stored = localStorage.getItem(CONFIG.STORAGE_KEYS.DEVICE_ID);
+        if (stored) return stored;
+        
+        const deviceId = this.generateId('device');
+        localStorage.setItem(CONFIG.STORAGE_KEYS.DEVICE_ID, deviceId);
+        return deviceId;
+    },
+    
+    // Format currency
+    formatCurrency(amount) {
+        return `${CONFIG.CURRENCY_SYMBOL}${amount.toLocaleString('en-IN')}`;
     },
     
     // Format date
@@ -603,24 +373,14 @@ const Utils = {
         return new Date(dateString).toLocaleDateString('en-IN', options);
     },
     
-    // Format relative time
-    formatRelativeTime(dateString) {
-        const now = new Date();
-        const date = new Date(dateString);
-        const diffTime = Math.abs(now - date);
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 0) return 'Today';
-        if (diffDays === 1) return 'Yesterday';
-        if (diffDays < 7) return `${diffDays} days ago`;
-        if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-        if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
-        return `${Math.floor(diffDays / 365)} years ago`;
-    },
-    
-    // Generate unique ID
-    generateId(prefix = 'id') {
-        return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Format duration
+    formatDuration(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        if (hours > 0) {
+            return `${hours}h ${mins}m`;
+        }
+        return `${mins}m`;
     },
     
     // Debounce function
@@ -648,26 +408,50 @@ const Utils = {
         };
     },
     
-    // Escape HTML
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+    // Slugify string
+    slugify(text) {
+        return text.toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    },
+    
+    // Get initials from name
+    getInitials(name) {
+        return name.split(' ')
+            .map(word => word[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    },
+    
+    // Calculate discount percentage
+    calculateDiscount(original, discounted) {
+        return Math.round(((original - discounted) / original) * 100);
+    },
+    
+    // Simple hash function (for demo purposes - not secure!)
+    simpleHash(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(16);
     },
     
     // Validate email
     isValidEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     },
     
-    // Validate phone
+    // Validate phone (Indian)
     isValidPhone(phone) {
-        const re = /^[0-9]{10}$/;
-        return re.test(phone);
+        return /^[6-9]\d{9}$/.test(phone);
     },
     
-    // Get password strength
+    // Check password strength
     getPasswordStrength(password) {
         let strength = 0;
         if (password.length >= 8) strength++;
@@ -676,106 +460,78 @@ const Utils = {
         if (/[0-9]/.test(password)) strength++;
         if (/[^a-zA-Z0-9]/.test(password)) strength++;
         
-        if (strength <= 2) return 'weak';
-        if (strength === 3) return 'fair';
-        if (strength === 4) return 'good';
-        return 'strong';
+        if (strength <= 2) return { level: 'weak', text: 'Weak', class: 'weak' };
+        if (strength === 3) return { level: 'fair', text: 'Fair', class: 'fair' };
+        if (strength === 4) return { level: 'good', text: 'Good', class: 'good' };
+        return { level: 'strong', text: 'Strong', class: 'strong' };
     },
     
-    // Hash password (simple - use proper hashing in production)
-    hashPassword(password) {
-        // In production, use proper hashing on server-side
-        return btoa(password);
-    },
-    
-    // Generate device fingerprint
-    getDeviceFingerprint() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.textBaseline = 'top';
-        ctx.font = '14px Arial';
-        ctx.fillText('LearnVerse', 2, 2);
-        
-        const navigator_info = [
-            navigator.userAgent,
-            navigator.language,
-            screen.colorDepth,
-            screen.width + 'x' + screen.height,
-            new Date().getTimezoneOffset()
-        ].join('|');
-        
-        return btoa(navigator_info + canvas.toDataURL());
-    },
-    
-    // Calculate discount percentage
-    calculateDiscount(original, discounted) {
-        return Math.round(((original - discounted) / original) * 100);
-    },
-    
-    // Truncate text
-    truncateText(text, maxLength) {
-        if (text.length <= maxLength) return text;
-        return text.substr(0, maxLength) + '...';
+    // Escape HTML
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     },
     
     // Parse query string
-    parseQueryString() {
+    parseQueryString(queryString) {
         const params = {};
-        const queryString = window.location.search.substring(1);
-        const pairs = queryString.split('&');
-        
-        pairs.forEach(pair => {
-            const [key, value] = pair.split('=');
-            if (key) params[decodeURIComponent(key)] = decodeURIComponent(value || '');
-        });
-        
+        const searchParams = new URLSearchParams(queryString);
+        for (const [key, value] of searchParams) {
+            params[key] = value;
+        }
         return params;
     },
     
     // Build query string
     buildQueryString(params) {
-        return Object.keys(params)
-            .filter(key => params[key] !== null && params[key] !== undefined && params[key] !== '')
-            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+        return Object.entries(params)
+            .filter(([, value]) => value !== null && value !== undefined && value !== '')
+            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
             .join('&');
-    },
-    
-    // Copy to clipboard
-    async copyToClipboard(text) {
-        try {
-            await navigator.clipboard.writeText(text);
-            return true;
-        } catch (err) {
-            // Fallback
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            return true;
-        }
-    },
-    
-    // Smooth scroll to element
-    scrollToElement(element, offset = 100) {
-        const top = element.getBoundingClientRect().top + window.pageYOffset - offset;
-        window.scrollTo({ top, behavior: 'smooth' });
-    },
-    
-    // Scroll to top
-    scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   5. API SERVICE
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// STORAGE MANAGER
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const Storage = {
+    get(key) {
+        try {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : null;
+        } catch {
+            return null;
+        }
+    },
+    
+    set(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+        } catch {
+            return false;
+        }
+    },
+    
+    remove(key) {
+        localStorage.removeItem(key);
+    },
+    
+    clear() {
+        localStorage.clear();
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// API SERVICE
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const API = {
-    // Make API request
+    // Base request function
     async request(action, data = {}) {
+        // If demo mode, use local data
         if (CONFIG.DEMO_MODE) {
             return this.handleDemoRequest(action, data);
         }
@@ -784,51 +540,59 @@ const API = {
             const response = await fetch(CONFIG.API_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     action,
-                    ...data,
-                    userId: State.user?.id,
-                    deviceId: Utils.getDeviceFingerprint()
+                    data,
+                    token: Auth.getToken(),
+                    deviceId: Utils.generateDeviceId()
                 })
             });
             
             const result = await response.json();
             
-            if (result.error) {
-                throw new Error(result.error);
+            if (!result.success && result.error === 'UNAUTHORIZED') {
+                Auth.logout();
+                Router.navigate('/login');
             }
             
             return result;
         } catch (error) {
             console.error('API Error:', error);
-            throw error;
+            return { success: false, error: error.message };
         }
     },
     
-    // Handle demo requests (for testing)
+    // Demo mode handler
     async handleDemoRequest(action, data) {
         // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 300));
         
         switch (action) {
             case 'getCourses':
-                return { success: true, courses: DemoData.courses };
-            
+                return { success: true, data: DEMO_DATA.courses.filter(c => c.isPublished) };
+                
             case 'getCourse':
-                const course = DemoData.courses.find(c => c.id === data.courseId || c.slug === data.slug);
-                return { success: true, course };
-            
-            case 'getLessons':
-                const lessons = DemoData.lessons[data.courseId] || [];
-                return { success: true, lessons };
-            
-            case 'getReviews':
-                const reviews = DemoData.reviews.filter(r => r.courseId === data.courseId);
-                return { success: true, reviews };
-            
+                const course = DEMO_DATA.courses.find(c => c.id === data.courseId || c.slug === data.slug);
+                return course ? { success: true, data: course } : { success: false, error: 'Course not found' };
+                
+            case 'getFeaturedCourses':
+                return { success: true, data: DEMO_DATA.courses.filter(c => c.isFeatured && c.isPublished) };
+                
+            case 'getCategories':
+                return { success: true, data: DEMO_DATA.categories };
+                
+            case 'searchCourses':
+                const query = data.query.toLowerCase();
+                const results = DEMO_DATA.courses.filter(c => 
+                    c.title.toLowerCase().includes(query) || 
+                    c.shortDescription.toLowerCase().includes(query)
+                );
+                return { success: true, data: results };
+                
             case 'register':
+                // Demo registration
                 const newUser = {
                     id: Utils.generateId('user'),
                     name: data.name,
@@ -836,2335 +600,2040 @@ const API = {
                     phone: data.phone,
                     createdAt: new Date().toISOString()
                 };
-                return { success: true, user: newUser };
-            
+                return { 
+                    success: true, 
+                    data: { 
+                        user: newUser, 
+                        token: Utils.generateId('token') 
+                    }
+                };
+                
             case 'login':
-                // Demo login - accept any email/password
-                const user = {
-                    id: Utils.generateId('user'),
+                // Demo login (any email/password works)
+                const demoUser = {
+                    id: 'user_demo',
                     name: 'Demo User',
                     email: data.email,
                     phone: '9876543210',
                     createdAt: new Date().toISOString()
                 };
-                return { success: true, user };
-            
+                return { 
+                    success: true, 
+                    data: { 
+                        user: demoUser, 
+                        token: Utils.generateId('token') 
+                    }
+                };
+                
             case 'getEnrollments':
-                return { success: true, enrollments: [] };
-            
+                return { success: true, data: Storage.get('demo_enrollments') || [] };
+                
             case 'createOrder':
                 return {
                     success: true,
-                    orderId: Utils.generateId('order'),
-                    razorpayOrderId: 'order_' + Utils.generateId('rp')
+                    data: {
+                        orderId: Utils.generateId('order'),
+                        razorpayOrderId: 'order_demo_' + Date.now(),
+                        amount: data.amount,
+                        currency: 'INR'
+                    }
                 };
-            
+                
             case 'verifyPayment':
-                return { success: true, enrollment: { id: Utils.generateId('enroll') } };
-            
+                // Demo: Always successful payment
+                const enrollments = Storage.get('demo_enrollments') || [];
+                const courseData = DEMO_DATA.courses.find(c => c.id === data.courseId);
+                if (courseData) {
+                    enrollments.push({
+                        id: Utils.generateId('enroll'),
+                        courseId: data.courseId,
+                        courseName: courseData.title,
+                        enrolledAt: new Date().toISOString(),
+                        expiresAt: new Date(Date.now() + courseData.validity * 24 * 60 * 60 * 1000).toISOString(),
+                        progress: 0,
+                        completedLessons: []
+                    });
+                    Storage.set('demo_enrollments', enrollments);
+                }
+                return { success: true, data: { enrolled: true } };
+                
             case 'getVideoToken':
                 return { 
                     success: true, 
-                    token: Utils.generateId('token'),
-                    youtubeId: 'dQw4w9WgXcQ' // Demo video
+                    data: { 
+                        token: Utils.generateId('vtoken'),
+                        youtubeId: data.lessonId ? 'dQw4w9WgXcQ' : null,
+                        expiresAt: Date.now() + CONFIG.VIDEO_TOKEN_EXPIRY * 60 * 1000
+                    }
                 };
-            
+                
+            case 'validateCoupon':
+                const coupon = DEMO_DATA.coupons.find(c => c.code.toUpperCase() === data.code.toUpperCase());
+                return coupon ? { success: true, data: coupon } : { success: false, error: 'Invalid coupon code' };
+                
+            case 'getReviews':
+                const reviews = DEMO_DATA.reviews.filter(r => r.courseId === data.courseId);
+                return { success: true, data: reviews };
+                
             default:
-                return { success: true };
+                return { success: false, error: 'Unknown action' };
         }
     },
     
-    // Specific API methods
-    async getCourses() {
-        return this.request('getCourses');
+    // Convenience methods
+    async getCourses(filters = {}) {
+        return this.request('getCourses', filters);
     },
     
-    async getCourse(courseId) {
-        return this.request('getCourse', { courseId });
-    },
-    
-    async getCourseBySlug(slug) {
+    async getCourse(slug) {
         return this.request('getCourse', { slug });
     },
     
-    async getLessons(courseId) {
-        return this.request('getLessons', { courseId });
+    async getFeaturedCourses() {
+        return this.request('getFeaturedCourses');
     },
     
-    async getReviews(courseId) {
-        return this.request('getReviews', { courseId });
-    },
-    
-    async register(name, email, phone, password) {
-        return this.request('register', { name, email, phone, password: Utils.hashPassword(password) });
-    },
-    
-    async login(email, password) {
-        return this.request('login', { email, password: Utils.hashPassword(password) });
+    async searchCourses(query) {
+        return this.request('searchCourses', { query });
     },
     
     async getEnrollments() {
         return this.request('getEnrollments');
     },
     
-    async createOrder(courseId, couponCode = null) {
-        return this.request('createOrder', { courseId, couponCode });
+    async createOrder(courseId, amount, couponCode = null) {
+        return this.request('createOrder', { courseId, amount, couponCode });
     },
     
-    async verifyPayment(orderId, paymentId, signature) {
-        return this.request('verifyPayment', { orderId, paymentId, signature });
+    async verifyPayment(paymentData) {
+        return this.request('verifyPayment', paymentData);
     },
     
     async getVideoToken(lessonId, courseId) {
         return this.request('getVideoToken', { lessonId, courseId });
     },
     
-    async markLessonComplete(lessonId, courseId) {
-        return this.request('markLessonComplete', { lessonId, courseId });
+    async validateCoupon(code, courseId) {
+        return this.request('validateCoupon', { code, courseId });
     },
     
-    async applyCoupon(code, courseId) {
-        return this.request('applyCoupon', { code, courseId });
+    async getReviews(courseId) {
+        return this.request('getReviews', { courseId });
     }
 };
-/* ═══════════════════════════════════════════════════════════════════════════
-   6. TOAST NOTIFICATIONS
-   ═══════════════════════════════════════════════════════════════════════════ */
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUTHENTICATION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const Auth = {
+    // Get current token
+    getToken() {
+        return Storage.get(CONFIG.STORAGE_KEYS.TOKEN);
+    },
+    
+    // Get current user
+    getUser() {
+        return Storage.get(CONFIG.STORAGE_KEYS.USER);
+    },
+    
+    // Check if user is logged in
+    isLoggedIn() {
+        return !!this.getToken() && !!this.getUser();
+    },
+    
+    // Login
+    async login(email, password) {
+        const result = await API.request('login', { email, password });
+        
+        if (result.success) {
+            Storage.set(CONFIG.STORAGE_KEYS.TOKEN, result.data.token);
+            Storage.set(CONFIG.STORAGE_KEYS.USER, result.data.user);
+            this.updateUI();
+        }
+        
+        return result;
+    },
+    
+    // Register
+    async register(name, email, phone, password) {
+        const result = await API.request('register', { name, email, phone, password });
+        
+        if (result.success) {
+            Storage.set(CONFIG.STORAGE_KEYS.TOKEN, result.data.token);
+            Storage.set(CONFIG.STORAGE_KEYS.USER, result.data.user);
+            this.updateUI();
+        }
+        
+        return result;
+    },
+    
+    // Logout
+    logout() {
+        Storage.remove(CONFIG.STORAGE_KEYS.TOKEN);
+        Storage.remove(CONFIG.STORAGE_KEYS.USER);
+        this.updateUI();
+        Router.navigate('/');
+        Toast.success('Logged Out', 'You have been logged out successfully');
+    },
+    
+    // Update UI based on auth state
+    updateUI() {
+        const authButtons = document.getElementById('navAuthButtons');
+        const userMenu = document.getElementById('navUserMenu');
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const mobileAuthButtons = document.getElementById('mobileAuthButtons');
+        
+        if (this.isLoggedIn()) {
+            const user = this.getUser();
+            
+            if (authButtons) authButtons.classList.add('hidden');
+            if (userMenu) userMenu.classList.remove('hidden');
+            if (userName) userName.textContent = user.name.split(' ')[0];
+            if (userAvatar) {
+                userAvatar.src = user.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`;
+            }
+            if (mobileAuthButtons) mobileAuthButtons.classList.add('hidden');
+        } else {
+            if (authButtons) authButtons.classList.remove('hidden');
+            if (userMenu) userMenu.classList.add('hidden');
+            if (mobileAuthButtons) mobileAuthButtons.classList.remove('hidden');
+        }
+    },
+    
+    // Check if user is enrolled in a course
+    async isEnrolled(courseId) {
+        if (!this.isLoggedIn()) return false;
+        
+        const result = await API.getEnrollments();
+        if (result.success) {
+            return result.data.some(e => e.courseId === courseId);
+        }
+        return false;
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TOAST NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const Toast = {
     container: null,
     
     init() {
-        this.container = document.getElementById('toast-container');
+        this.container = document.getElementById('toastContainer');
     },
     
-    show(message, type = 'info', title = '', duration = 5000) {
+    show(type, title, message, duration = 5000) {
+        if (!this.container) this.init();
+        
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         
-        const icons = {
-            success: '✓',
-            error: '✕',
-            warning: '⚠',
-            info: 'ℹ'
-        };
+        const iconSvg = this.getIcon(type);
         
         toast.innerHTML = `
-            <div class="toast-icon">${icons[type]}</div>
+            <div class="toast-icon">${iconSvg}</div>
             <div class="toast-content">
-                ${title ? `<div class="toast-title">${title}</div>` : ''}
-                <div class="toast-message">${message}</div>
+                <div class="toast-title">${Utils.escapeHtml(title)}</div>
+                ${message ? `<div class="toast-message">${Utils.escapeHtml(message)}</div>` : ''}
             </div>
-            <button class="toast-close" aria-label="Close">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg>
-            </button>
-            <div class="toast-progress">
-                <div class="toast-progress-bar" style="animation-duration: ${duration}ms"></div>
-            </div>
+            <button class="toast-close">&times;</button>
+            <div class="toast-progress"></div>
         `;
         
         // Close button handler
         toast.querySelector('.toast-close').addEventListener('click', () => {
-            this.dismiss(toast);
+            this.hide(toast);
         });
         
         this.container.appendChild(toast);
         
-        // Auto dismiss
-        setTimeout(() => {
-            this.dismiss(toast);
-        }, duration);
+        // Auto hide
+        if (duration > 0) {
+            setTimeout(() => this.hide(toast), duration);
+        }
         
         return toast;
     },
     
-    dismiss(toast) {
-        if (!toast || !toast.parentNode) return;
-        
-        toast.classList.add('toast-out');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
+    hide(toast) {
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 300);
     },
     
-    success(message, title = 'Success') {
-        return this.show(message, 'success', title);
+    getIcon(type) {
+        const icons = {
+            success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
+            error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+            warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+            info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>'
+        };
+        return icons[type] || icons.info;
     },
     
-    error(message, title = 'Error') {
-        return this.show(message, 'error', title);
+    success(title, message) {
+        return this.show('success', title, message);
     },
     
-    warning(message, title = 'Warning') {
-        return this.show(message, 'warning', title);
+    error(title, message) {
+        return this.show('error', title, message);
     },
     
-    info(message, title = 'Info') {
-        return this.show(message, 'info', title);
+    warning(title, message) {
+        return this.show('warning', title, message);
+    },
+    
+    info(title, message) {
+        return this.show('info', title, message);
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   7. MODAL MANAGER
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const Modal = {
-    activeModal: null,
-    
-    open(modalId) {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
-        
-        // Close any open modal
-        if (this.activeModal) {
-            this.close(this.activeModal);
-        }
-        
-        modal.classList.add('active');
-        document.body.classList.add('no-scroll');
-        this.activeModal = modalId;
-        
-        // Focus trap
-        const focusableElements = modal.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusableElements.length) {
-            focusableElements[0].focus();
-        }
-    },
-    
-    close(modalId = null) {
-        const id = modalId || this.activeModal;
-        if (!id) return;
-        
-        const modal = document.getElementById(id);
-        if (!modal) return;
-        
-        modal.classList.remove('active');
-        document.body.classList.remove('no-scroll');
-        
-        // Stop video if video modal
-        if (id === 'video-modal') {
-            const iframe = modal.querySelector('iframe');
-            if (iframe) iframe.src = '';
-        }
-        
-        this.activeModal = null;
-    },
-    
-    confirm(title, message, onConfirm, onCancel = null) {
-        const modal = document.getElementById('confirm-modal');
-        if (!modal) return;
-        
-        document.getElementById('confirm-title').textContent = title;
-        document.getElementById('confirm-message').textContent = message;
-        
-        const proceedBtn = document.getElementById('confirm-proceed');
-        const cancelBtn = document.getElementById('confirm-cancel');
-        
-        // Remove old listeners
-        const newProceedBtn = proceedBtn.cloneNode(true);
-        const newCancelBtn = cancelBtn.cloneNode(true);
-        proceedBtn.parentNode.replaceChild(newProceedBtn, proceedBtn);
-        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-        
-        // Add new listeners
-        newProceedBtn.addEventListener('click', () => {
-            this.close('confirm-modal');
-            if (onConfirm) onConfirm();
-        });
-        
-        newCancelBtn.addEventListener('click', () => {
-            this.close('confirm-modal');
-            if (onCancel) onCancel();
-        });
-        
-        this.open('confirm-modal');
-    },
+    overlay: null,
+    modal: null,
+    content: null,
     
     init() {
-        // Close modal on overlay click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', () => this.close());
+        this.overlay = document.getElementById('modalOverlay');
+        this.modal = document.getElementById('modal');
+        this.content = document.getElementById('modalContent');
+        
+        // Close on overlay click
+        this.overlay?.addEventListener('click', (e) => {
+            if (e.target === this.overlay) this.close();
         });
         
-        // Close modal on close button click
-        document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', () => this.close());
-        });
+        // Close on button click
+        document.getElementById('modalClose')?.addEventListener('click', () => this.close());
         
-        // Close modal on Escape key
+        // Close on Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.activeModal) {
+            if (e.key === 'Escape' && this.overlay?.classList.contains('show')) {
                 this.close();
             }
         });
+    },
+    
+    open(content, options = {}) {
+        if (!this.overlay) this.init();
+        
+        if (typeof content === 'string') {
+            this.content.innerHTML = content;
+        } else {
+            this.content.innerHTML = '';
+            this.content.appendChild(content);
+        }
+        
+        if (options.width) {
+            this.modal.style.maxWidth = options.width;
+        }
+        
+        this.overlay.classList.add('show');
+        document.body.classList.add('no-scroll');
+    },
+    
+    close() {
+        this.overlay?.classList.remove('show');
+        document.body.classList.remove('no-scroll');
+    },
+    
+    confirm(title, message, onConfirm, onCancel) {
+        const html = `
+            <div class="modal-header">
+                <h3 class="modal-title">${Utils.escapeHtml(title)}</h3>
+            </div>
+            <div class="modal-body">
+                <p>${Utils.escapeHtml(message)}</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+                <button class="btn btn-primary" id="modalConfirm">Confirm</button>
+            </div>
+        `;
+        
+        this.open(html);
+        
+        document.getElementById('modalCancel').addEventListener('click', () => {
+            this.close();
+            if (onCancel) onCancel();
+        });
+        
+        document.getElementById('modalConfirm').addEventListener('click', () => {
+            this.close();
+            if (onConfirm) onConfirm();
+        });
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   8. LOADING MANAGER
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const Loading = {
-    screen: null,
-    
-    init() {
-        this.screen = document.getElementById('loading-screen');
-    },
-    
-    show() {
-        if (this.screen) {
-            this.screen.classList.remove('hidden');
-        }
-    },
-    
-    hide() {
-        if (this.screen) {
-            this.screen.classList.add('hidden');
-        }
-    },
-    
-    // Show loading on button
-    buttonStart(button) {
-        button.classList.add('loading');
-        button.disabled = true;
-    },
-    
-    buttonStop(button) {
-        button.classList.remove('loading');
-        button.disabled = false;
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   9. NAVIGATION & ROUTING
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// ROUTER (SPA Navigation)
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const Router = {
+    routes: {},
+    currentRoute: null,
+    
     init() {
-        // Handle navigation clicks
+        // Define routes
+        this.routes = {
+            '/': { template: 'homePage', title: 'Home', handler: Pages.home },
+            '/courses': { template: 'coursesPage', title: 'Courses', handler: Pages.courses },
+            '/course/:slug': { template: 'courseDetailPage', title: 'Course', handler: Pages.courseDetail },
+            '/learn/:courseId/:lessonId': { template: 'videoPlayerPage', title: 'Learning', handler: Pages.videoPlayer, auth: true },
+            '/login': { template: 'loginPage', title: 'Login', handler: Pages.login, guest: true },
+            '/register': { template: 'registerPage', title: 'Register', handler: Pages.register, guest: true },
+            '/forgot-password': { template: 'forgotPasswordPage', title: 'Forgot Password', handler: Pages.forgotPassword, guest: true },
+            '/dashboard': { template: 'dashboardPage', title: 'Dashboard', handler: Pages.dashboard, auth: true },
+            '/my-courses': { template: 'myCoursesPage', title: 'My Courses', handler: Pages.myCourses, auth: true },
+            '/wishlist': { template: 'dashboardPage', title: 'Wishlist', handler: Pages.wishlist, auth: true },
+            '/certificates': { template: 'certificatesPage', title: 'Certificates', handler: Pages.certificates, auth: true },
+            '/settings': { template: 'settingsPage', title: 'Settings', handler: Pages.settings, auth: true },
+            '/checkout/:courseId': { template: 'checkoutPage', title: 'Checkout', handler: Pages.checkout, auth: true },
+            '/payment-success': { template: 'paymentSuccessPage', title: 'Payment Successful', handler: Pages.paymentSuccess },
+            '/about': { template: 'aboutPage', title: 'About Us', handler: Pages.about },
+            '/contact': { template: 'contactPage', title: 'Contact', handler: Pages.contact },
+            '/help': { template: 'aboutPage', title: 'Help', handler: Pages.help },
+            '/terms': { template: 'aboutPage', title: 'Terms of Service', handler: Pages.terms },
+            '/privacy': { template: 'aboutPage', title: 'Privacy Policy', handler: Pages.privacy }
+        };
+        
+        // Listen for hash changes
+        window.addEventListener('hashchange', () => this.handleRoute());
+        
+        // Handle initial route
+        this.handleRoute();
+        
+        // Handle link clicks
         document.addEventListener('click', (e) => {
-            const link = e.target.closest('[data-page]');
+            const link = e.target.closest('[data-link]');
             if (link) {
                 e.preventDefault();
-                const page = link.dataset.page;
-                this.navigate(page);
-            }
-            
-            const categoryLink = e.target.closest('[data-category]');
-            if (categoryLink) {
-                e.preventDefault();
-                const category = categoryLink.dataset.category;
-                State.filters.category = [category];
-                this.navigate('courses');
+                const href = link.getAttribute('href');
+                if (href) this.navigate(href.replace('#', ''));
             }
         });
-        
-        // Handle browser back/forward
-        window.addEventListener('popstate', (e) => {
-            if (e.state && e.state.page) {
-                this.showPage(e.state.page, false);
-            }
-        });
-        
-        // Initial page load
-        const params = Utils.parseQueryString();
-        if (params.page) {
-            this.showPage(params.page, false);
-        }
     },
     
-    navigate(page, data = {}) {
-        State.previousPage = State.currentPage;
+    handleRoute() {
+        const hash = window.location.hash.slice(1) || '/';
+        const [path, queryString] = hash.split('?');
+        const params = queryString ? Utils.parseQueryString(queryString) : {};
         
-        // Store data if needed
-        if (data.courseId) {
-            State.currentCourse = DemoData.courses.find(c => c.id === data.courseId);
-        }
-        if (data.courseSlug) {
-            State.currentCourse = DemoData.courses.find(c => c.slug === data.courseSlug);
+        // Find matching route
+        let matchedRoute = null;
+        let routeParams = {};
+        
+        for (const [pattern, route] of Object.entries(this.routes)) {
+            const match = this.matchRoute(pattern, path);
+            if (match) {
+                matchedRoute = route;
+                routeParams = match;
+                break;
+            }
         }
         
-        this.showPage(page);
-        
-        // Update URL
-        const url = new URL(window.location);
-        url.searchParams.set('page', page);
-        if (data.courseSlug) {
-            url.searchParams.set('course', data.courseSlug);
+        if (!matchedRoute) {
+            // 404
+            this.render404();
+            return;
         }
-        window.history.pushState({ page, ...data }, '', url);
+        
+        // Check auth requirements
+        if (matchedRoute.auth && !Auth.isLoggedIn()) {
+            this.navigate('/login');
+            Toast.warning('Login Required', 'Please login to access this page');
+            return;
+        }
+        
+        if (matchedRoute.guest && Auth.isLoggedIn()) {
+            this.navigate('/dashboard');
+            return;
+        }
+        
+        // Update current route
+        this.currentRoute = {
+            ...matchedRoute,
+            path,
+            params: routeParams,
+            query: params
+        };
+        
+        // Render page
+        this.renderPage(matchedRoute, routeParams, params);
+    },
+    
+    matchRoute(pattern, path) {
+        const patternParts = pattern.split('/');
+        const pathParts = path.split('/');
+        
+        if (patternParts.length !== pathParts.length) return null;
+        
+        const params = {};
+        
+        for (let i = 0; i < patternParts.length; i++) {
+            if (patternParts[i].startsWith(':')) {
+                params[patternParts[i].slice(1)] = pathParts[i];
+            } else if (patternParts[i] !== pathParts[i]) {
+                return null;
+            }
+        }
+        
+        return params;
+    },
+    
+    async renderPage(route, params, query) {
+        const app = document.getElementById('app');
+        const template = document.getElementById(route.template);
+        
+        if (!template) {
+            console.error('Template not found:', route.template);
+            this.render404();
+            return;
+        }
+        
+        // Show loader
+        app.innerHTML = '<div class="page-loading"><div class="spinner"></div></div>';
+        
+        // Clone template content
+        const content = template.content.cloneNode(true);
+        
+        // Clear app and append new content
+        app.innerHTML = '';
+        app.appendChild(content);
+        
+        // Update page title
+        document.title = `${route.title} | ${CONFIG.SITE_NAME}`;
         
         // Scroll to top
-        Utils.scrollToTop();
-    },
-    
-    showPage(page, updateNav = true) {
-        // Check authentication for protected pages
-        const protectedPages = ['dashboard', 'my-courses', 'wishlist', 'certificates', 'settings', 'player', 'checkout'];
-        if (protectedPages.includes(page) && !State.isAuthenticated) {
-            Toast.warning('Please login to access this page');
-            page = 'login';
-        }
+        window.scrollTo(0, 0);
         
-        // Hide all pages
-        document.querySelectorAll('.page').forEach(p => {
-            p.classList.remove('active');
-        });
-        
-        // Show target page
-        const targetPage = document.getElementById(`page-${page}`);
-        if (targetPage) {
-            targetPage.classList.add('active');
-            State.currentPage = page;
-        } else {
-            // Show 404
-            document.getElementById('page-404')?.classList.add('active');
-            State.currentPage = '404';
-        }
-        
-        // Update navigation
-        if (updateNav) {
-            this.updateNavigation(page);
-        }
-        
-        // Load page content
-        this.loadPageContent(page);
-        
-        // Show/hide navbar and footer for special pages
-        this.updateLayout(page);
-    },
-    
-    updateNavigation(page) {
-        // Update nav links
-        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
-            link.classList.remove('active');
-            if (link.dataset.page === page) {
-                link.classList.add('active');
+        // Call page handler
+        if (route.handler) {
+            try {
+                await route.handler(params, query);
+            } catch (error) {
+                console.error('Page handler error:', error);
+                Toast.error('Error', 'Something went wrong loading the page');
             }
-        });
+        }
+        
+        // Update active nav link
+        this.updateActiveNav();
         
         // Close mobile menu
-        UI.closeMobileMenu();
+        document.getElementById('mobileMenu')?.classList.remove('show');
+        document.getElementById('navToggle')?.classList.remove('active');
+        
+        // Initialize animations
+        UI.initScrollAnimations();
     },
     
-    updateLayout(page) {
-        const navbar = document.getElementById('navbar');
-        const footer = document.getElementById('main-footer');
+    render404() {
+        const app = document.getElementById('app');
+        const template = document.getElementById('notFoundPage');
         
-        const hideNavPages = ['login', 'register', 'player'];
-        const hideFooterPages = ['login', 'register', 'player', 'dashboard'];
-        
-        if (navbar) {
-            navbar.style.display = hideNavPages.includes(page) ? 'none' : '';
+        if (template) {
+            app.innerHTML = '';
+            app.appendChild(template.content.cloneNode(true));
+        } else {
+            app.innerHTML = `
+                <div class="error-section">
+                    <div class="container">
+                        <div class="error-content">
+                            <h1 class="error-code">404</h1>
+                            <h2 class="error-title">Page Not Found</h2>
+                            <p class="error-message">The page you're looking for doesn't exist.</p>
+                            <a href="#/" class="btn btn-primary btn-lg" data-link>Back to Home</a>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
         
-        if (footer) {
-            footer.style.display = hideFooterPages.includes(page) ? 'none' : '';
-        }
+        document.title = `404 - Page Not Found | ${CONFIG.SITE_NAME}`;
     },
     
-    loadPageContent(page) {
-        switch (page) {
-            case 'home':
-                HomePage.init();
-                break;
-            case 'courses':
-                CoursesPage.init();
-                break;
-            case 'course-detail':
-                CourseDetailPage.init();
-                break;
-            case 'player':
-                PlayerPage.init();
-                break;
-            case 'dashboard':
-                DashboardPage.init();
-                break;
-            case 'checkout':
-                CheckoutPage.init();
-                break;
-            case 'login':
-            case 'register':
-                AuthPage.init();
-                break;
-        }
+    navigate(path) {
+        window.location.hash = path;
+    },
+    
+    updateActiveNav() {
+        const path = this.currentRoute?.path || '/';
+        
+        document.querySelectorAll('.nav-link').forEach(link => {
+            const href = link.getAttribute('href')?.replace('#', '');
+            if (href === path || (path.startsWith(href) && href !== '/')) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   10. UI COMPONENTS
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// PAGE HANDLERS
+// ═══════════════════════════════════════════════════════════════════════════════
 
-const UI = {
-    init() {
-        this.initNavbar();
-        this.initThemeToggle();
-        this.initSearch();
-        this.initMobileMenu();
-        this.initBackToTop();
-        this.initAnimations();
-        this.initFAQ();
-        this.initTestimonials();
-        this.updateAuthUI();
+const Pages = {
+    // HOME PAGE
+    async home() {
+        // Load featured courses
+        const result = await API.getFeaturedCourses();
+        
+        if (result.success) {
+            const grid = document.getElementById('featuredCoursesGrid');
+            if (grid) {
+                grid.innerHTML = result.data.map(course => Components.courseCard(course)).join('');
+            }
+        }
+        
+        // Initialize category filter
+        const filterButtons = document.querySelectorAll('#categoryFilter .filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                Pages.filterFeaturedCourses(btn.dataset.category);
+            });
+        });
+        
+        // Initialize category cards
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', () => {
+                Router.navigate(`/courses?category=${card.dataset.category}`);
+            });
+        });
+        
+        // Initialize testimonials slider
+        UI.initTestimonialsSlider();
+        
+        // Initialize FAQ accordions
+        UI.initAccordions();
+        
+        // Initialize stats counter
+        UI.initStatsCounter();
+        
+        // Newsletter form
+        const newsletterForm = document.getElementById('newsletterForm');
+        newsletterForm?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            Toast.success('Subscribed!', 'Thank you for subscribing to our newsletter');
+            newsletterForm.reset();
+        });
     },
     
-    // Navbar
-    initNavbar() {
-        const navbar = document.getElementById('navbar');
-        let lastScroll = 0;
+    async filterFeaturedCourses(category) {
+        const result = await API.getFeaturedCourses();
         
-        window.addEventListener('scroll', Utils.throttle(() => {
-            const currentScroll = window.pageYOffset;
+        if (result.success) {
+            let courses = result.data;
             
-            // Add scrolled class
-            if (currentScroll > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+            if (category !== 'all') {
+                courses = courses.filter(c => c.category === category);
             }
             
-            lastScroll = currentScroll;
-        }, 100));
+            const grid = document.getElementById('featuredCoursesGrid');
+            if (grid) {
+                if (courses.length === 0) {
+                    grid.innerHTML = '<p class="text-center text-muted">No courses found in this category</p>';
+                } else {
+                    grid.innerHTML = courses.map(course => Components.courseCard(course)).join('');
+                }
+            }
+        }
     },
     
-    // Theme Toggle
-    initThemeToggle() {
-        const toggle = document.getElementById('theme-toggle');
-        if (!toggle) return;
+    // COURSES PAGE
+    async courses(params, query) {
+        const grid = document.getElementById('allCoursesGrid');
+        const countEl = document.getElementById('coursesCount');
         
-        toggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        // Show loading
+        if (grid) {
+            grid.innerHTML = Array(6).fill('<div class="skeleton-card"></div>').join('');
+        }
+        
+        // Load courses
+        const result = await API.getCourses(query);
+        
+        if (result.success) {
+            let courses = result.data;
             
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('learnverse_theme', newTheme);
-        });
+            // Apply filters
+            courses = Pages.applyFilters(courses, query);
+            
+            // Update count
+            if (countEl) countEl.textContent = courses.length;
+            
+            // Render courses
+            if (grid) {
+                if (courses.length === 0) {
+                    document.getElementById('emptyCoursesState')?.classList.remove('hidden');
+                    grid.innerHTML = '';
+                } else {
+                    document.getElementById('emptyCoursesState')?.classList.add('hidden');
+                    grid.innerHTML = courses.map(course => Components.courseCard(course)).join('');
+                }
+            }
+        }
+        
+        // Initialize filters
+        Pages.initCourseFilters();
     },
     
-    // Search
-    initSearch() {
-        const searchToggle = document.getElementById('search-toggle');
-        const searchBox = document.getElementById('search-box');
-        const searchInput = document.getElementById('search-input');
-        const searchClose = document.getElementById('search-close');
-        const searchResults = document.getElementById('search-results');
+    applyFilters(courses, filters) {
+        let filtered = [...courses];
         
-        if (!searchToggle || !searchBox) return;
+        if (filters.category) {
+            filtered = filtered.filter(c => c.category === filters.category);
+        }
         
-        // Toggle search
-        searchToggle.addEventListener('click', () => {
-            searchBox.classList.add('active');
-            searchInput.focus();
-            State.isSearchOpen = true;
-        });
+        if (filters.level) {
+            filtered = filtered.filter(c => c.level === filters.level);
+        }
         
-        // Close search
-        searchClose.addEventListener('click', () => {
-            this.closeSearch();
-        });
+        if (filters.search) {
+            const query = filters.search.toLowerCase();
+            filtered = filtered.filter(c => 
+                c.title.toLowerCase().includes(query) ||
+                c.shortDescription.toLowerCase().includes(query)
+            );
+        }
         
+        if (filters.sort) {
+            switch (filters.sort) {
+                case 'price-low':
+                    filtered.sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
+                    break;
+                case 'price-high':
+                    filtered.sort((a, b) => (b.discountPrice || b.price) - (a.discountPrice || a.price));
+                    break;
+                case 'rating':
+                    filtered.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'newest':
+                    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    break;
+            }
+        }
+        
+        return filtered;
+    },
+    
+    initCourseFilters() {
         // Search input
-        searchInput.addEventListener('input', Utils.debounce((e) => {
-            const query = e.target.value.trim().toLowerCase();
-            
-            if (query.length < 2) {
-                searchResults.innerHTML = '';
-                return;
-            }
-            
-            const results = DemoData.courses.filter(course =>
-                course.title.toLowerCase().includes(query) ||
-                course.category.toLowerCase().includes(query) ||
-                course.instructor.toLowerCase().includes(query)
-            ).slice(0, 5);
-            
-            this.renderSearchResults(results, searchResults);
-        }, 300));
+        const searchInput = document.getElementById('courseSearchInput');
+        searchInput?.addEventListener('input', Utils.debounce((e) => {
+            const currentQuery = Router.currentRoute?.query || {};
+            currentQuery.search = e.target.value;
+            Router.navigate('/courses?' + Utils.buildQueryString(currentQuery));
+        }, 500));
         
-        // Keyboard shortcut (Cmd/Ctrl + K)
-        document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                searchBox.classList.add('active');
-                searchInput.focus();
-            }
-            
-            if (e.key === 'Escape' && State.isSearchOpen) {
-                this.closeSearch();
-            }
+        // Sort select
+        const sortSelect = document.getElementById('sortSelect');
+        sortSelect?.addEventListener('change', (e) => {
+            const currentQuery = Router.currentRoute?.query || {};
+            currentQuery.sort = e.target.value;
+            Router.navigate('/courses?' + Utils.buildQueryString(currentQuery));
+        });
+        
+        // Category checkboxes
+        document.querySelectorAll('input[name="category"]').forEach(input => {
+            input.addEventListener('change', () => {
+                const checked = document.querySelectorAll('input[name="category"]:checked');
+                const categories = Array.from(checked).map(c => c.value).join(',');
+                const currentQuery = Router.currentRoute?.query || {};
+                currentQuery.category = categories;
+                Router.navigate('/courses?' + Utils.buildQueryString(currentQuery));
+            });
+        });
+        
+        // Level checkboxes
+        document.querySelectorAll('input[name="level"]').forEach(input => {
+            input.addEventListener('change', () => {
+                const checked = document.querySelectorAll('input[name="level"]:checked');
+                const levels = Array.from(checked).map(c => c.value).join(',');
+                const currentQuery = Router.currentRoute?.query || {};
+                currentQuery.level = levels;
+                Router.navigate('/courses?' + Utils.buildQueryString(currentQuery));
+            });
+        });
+        
+        // Price range
+        const priceRange = document.getElementById('priceRange');
+        const maxPriceValue = document.getElementById('maxPriceValue');
+        priceRange?.addEventListener('input', (e) => {
+            if (maxPriceValue) maxPriceValue.textContent = Utils.formatCurrency(parseInt(e.target.value));
+        });
+        
+        // Clear filters
+        document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
+            Router.navigate('/courses');
+        });
+        
+        document.getElementById('resetFiltersBtn')?.addEventListener('click', () => {
+            Router.navigate('/courses');
+        });
+        
+        // View toggle
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const grid = document.getElementById('allCoursesGrid');
+                if (grid) {
+                    grid.classList.toggle('list-view', btn.dataset.view === 'list');
+                }
+            });
+        });
+        
+        // Mobile filter toggle
+        document.getElementById('filterToggleBtn')?.addEventListener('click', () => {
+            document.getElementById('filtersSidebar')?.classList.toggle('show');
         });
     },
     
-    closeSearch() {
-        const searchBox = document.getElementById('search-box');
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
+    // COURSE DETAIL PAGE
+    async courseDetail(params) {
+        const container = document.getElementById('courseDetailContent');
+        if (!container) return;
         
-        searchBox.classList.remove('active');
-        searchInput.value = '';
-        searchResults.innerHTML = '';
-        State.isSearchOpen = false;
-    },
-    
-    renderSearchResults(results, container) {
-        if (results.length === 0) {
+        // Show loading
+        container.innerHTML = '<div class="page-loading"><div class="spinner"></div></div>';
+        
+        // Load course data
+        const result = await API.getCourse(params.slug);
+        
+        if (!result.success) {
             container.innerHTML = `
-                <div class="search-no-results">
-                    <p>No courses found</p>
+                <div class="error-section">
+                    <div class="container">
+                        <div class="error-content">
+                            <h1 class="error-code">404</h1>
+                            <h2>Course Not Found</h2>
+                            <p>The course you're looking for doesn't exist.</p>
+                            <a href="#/courses" class="btn btn-primary" data-link>Browse Courses</a>
+                        </div>
+                    </div>
                 </div>
             `;
             return;
         }
         
-        container.innerHTML = results.map(course => `
-            <div class="search-result-item" data-course-id="${course.id}">
-                <img src="${course.thumbnail}" alt="${course.title}">
-                <div>
-                    <div class="result-title">${course.title}</div>
-                    <div class="result-category">${course.category}</div>
-                </div>
-            </div>
-        `).join('');
+        const course = result.data;
+        const isEnrolled = await Auth.isEnrolled(course.id);
         
-        // Add click handlers
-        container.querySelectorAll('.search-result-item').forEach(item => {
+        // Update page title
+        document.title = `${course.title} | ${CONFIG.SITE_NAME}`;
+        
+        // Render course detail
+        container.innerHTML = Components.courseDetailPage(course, isEnrolled);
+        
+        // Initialize tabs
+        UI.initTabs();
+        
+        // Initialize curriculum accordions
+        UI.initAccordions();
+        
+        // Load reviews
+        const reviewsResult = await API.getReviews(course.id);
+        if (reviewsResult.success) {
+            const reviewsList = document.getElementById('reviewsList');
+            if (reviewsList) {
+                reviewsList.innerHTML = reviewsResult.data.map(review => Components.reviewCard(review)).join('');
+            }
+        }
+        
+        // Handle enroll/buy button
+        document.getElementById('enrollBtn')?.addEventListener('click', () => {
+            if (isEnrolled) {
+                // Go to first lesson
+                const firstLesson = course.sections?.[0]?.lessons?.[0];
+                if (firstLesson) {
+                    Router.navigate(`/learn/${course.id}/${firstLesson.id}`);
+                }
+            } else if (Auth.isLoggedIn()) {
+                Router.navigate(`/checkout/${course.id}`);
+            } else {
+                Toast.info('Login Required', 'Please login to enroll in this course');
+                Router.navigate('/login');
+            }
+        });
+        
+        document.getElementById('buyNowBtn')?.addEventListener('click', () => {
+            if (Auth.isLoggedIn()) {
+                Router.navigate(`/checkout/${course.id}`);
+            } else {
+                Toast.info('Login Required', 'Please login to purchase this course');
+                Router.navigate('/login');
+            }
+        });
+    },
+    
+    // VIDEO PLAYER PAGE
+    async videoPlayer(params) {
+        const container = document.getElementById('videoPlayerContent');
+        if (!container) return;
+        
+        // Check enrollment
+        const isEnrolled = await Auth.isEnrolled(params.courseId);
+        
+        if (!isEnrolled) {
+            Toast.error('Access Denied', 'You are not enrolled in this course');
+            Router.navigate('/courses');
+            return;
+        }
+        
+        // Load course data
+        const courseResult = await API.getCourse(params.courseId);
+        if (!courseResult.success) {
+            Toast.error('Error', 'Course not found');
+            Router.navigate('/my-courses');
+            return;
+        }
+        
+        const course = courseResult.data;
+        
+        // Find current lesson
+        let currentLesson = null;
+        let currentSection = null;
+        
+        for (const section of course.sections || []) {
+            for (const lesson of section.lessons || []) {
+                if (lesson.id === params.lessonId) {
+                    currentLesson = lesson;
+                    currentSection = section;
+                    break;
+                }
+            }
+            if (currentLesson) break;
+        }
+        
+        if (!currentLesson) {
+            Toast.error('Error', 'Lesson not found');
+            Router.navigate('/my-courses');
+            return;
+        }
+        
+        // Render video player page
+        container.innerHTML = Components.videoPlayerPage(course, currentLesson, currentSection);
+        
+        // Load video
+        await VideoPlayer.init(course, currentLesson);
+        
+        // Initialize lesson sidebar
+        Pages.initLessonSidebar(course, currentLesson);
+    },
+    
+    initLessonSidebar(course, currentLesson) {
+        const lessonItems = document.querySelectorAll('.lesson-item-player');
+        
+        lessonItems.forEach(item => {
             item.addEventListener('click', () => {
-                const courseId = item.dataset.courseId;
-                const course = DemoData.courses.find(c => c.id === courseId);
-                if (course) {
-                    State.currentCourse = course;
-                    Router.navigate('course-detail', { courseSlug: course.slug });
-                    this.closeSearch();
+                const lessonId = item.dataset.lessonId;
+                if (lessonId && !item.classList.contains('locked')) {
+                    Router.navigate(`/learn/${course.id}/${lessonId}`);
                 }
             });
         });
     },
     
-    // Mobile Menu
-    initMobileMenu() {
-        const toggle = document.getElementById('mobile-menu-toggle');
-        const menu = document.getElementById('mobile-menu');
+    // LOGIN PAGE
+    login() {
+        const form = document.getElementById('loginForm');
         
-        if (!toggle || !menu) return;
-        
-        toggle.addEventListener('click', () => {
-            toggle.classList.toggle('active');
-            menu.classList.toggle('active');
-            document.body.classList.toggle('no-scroll');
-            State.isMobileMenuOpen = !State.isMobileMenuOpen;
-        });
-        
-        // Mobile dropdown toggles
-        document.querySelectorAll('.mobile-dropdown-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.classList.toggle('active');
-                btn.nextElementSibling.classList.toggle('active');
-            });
-        });
-    },
-    
-    closeMobileMenu() {
-        const toggle = document.getElementById('mobile-menu-toggle');
-        const menu = document.getElementById('mobile-menu');
-        
-        if (toggle) toggle.classList.remove('active');
-        if (menu) menu.classList.remove('active');
-        document.body.classList.remove('no-scroll');
-        State.isMobileMenuOpen = false;
-    },
-    
-    // Back to Top
-    initBackToTop() {
-        const btn = document.getElementById('back-to-top');
-        if (!btn) return;
-        
-        window.addEventListener('scroll', Utils.throttle(() => {
-            if (window.pageYOffset > 500) {
-                btn.classList.add('visible');
-            } else {
-                btn.classList.remove('visible');
-            }
-        }, 100));
-        
-        btn.addEventListener('click', () => {
-            Utils.scrollToTop();
-        });
-    },
-    
-    // Scroll Animations
-    initAnimations() {
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animated');
-                    
-                    // Counter animation
-                    if (entry.target.classList.contains('counter')) {
-                        this.animateCounter(entry.target);
-                    }
-                }
-            });
-        }, observerOptions);
-        
-        // Observe animation elements
-        document.querySelectorAll('.animate-fade-up, .animate-fade-left, .stagger-children, .counter').forEach(el => {
-            observer.observe(el);
-        });
-    },
-    
-    animateCounter(element) {
-        const target = parseFloat(element.dataset.target);
-        const duration = 2000;
-        const start = 0;
-        const startTime = performance.now();
-        
-        const updateCounter = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
+        form?.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            // Easing function
-            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-            const current = start + (target - start) * easeOutQuart;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
             
-            if (target % 1 !== 0) {
-                element.textContent = current.toFixed(1);
-            } else {
-                element.textContent = Math.floor(current).toLocaleString();
+            // Validate
+            if (!Utils.isValidEmail(email)) {
+                document.getElementById('loginEmailError').textContent = 'Please enter a valid email';
+                return;
             }
             
-            if (progress < 1) {
-                requestAnimationFrame(updateCounter);
-            }
-        };
-        
-        requestAnimationFrame(updateCounter);
-    },
-    
-    // FAQ Accordion
-    initFAQ() {
-        document.querySelectorAll('.faq-question').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const item = btn.parentElement;
-                const isActive = item.classList.contains('active');
-                
-                // Close all FAQ items
-                document.querySelectorAll('.faq-item').forEach(faq => {
-                    faq.classList.remove('active');
-                });
-                
-                // Open clicked item if it wasn't active
-                if (!isActive) {
-                    item.classList.add('active');
-                }
-            });
-        });
-    },
-    
-    // Testimonials Slider
-    initTestimonials() {
-        const track = document.querySelector('.testimonial-track');
-        const prevBtn = document.getElementById('testimonial-prev');
-        const nextBtn = document.getElementById('testimonial-next');
-        const dots = document.querySelectorAll('.testimonial-dots .dot');
-        
-        if (!track || !prevBtn || !nextBtn) return;
-        
-        let currentIndex = 0;
-        const totalSlides = document.querySelectorAll('.testimonial-card').length;
-        
-        const goToSlide = (index) => {
-            if (index < 0) index = totalSlides - 1;
-            if (index >= totalSlides) index = 0;
+            // Show loading
+            btn.disabled = true;
+            btn.querySelector('.btn-text').classList.add('hidden');
+            btn.querySelector('.btn-loader').classList.remove('hidden');
             
-            currentIndex = index;
-            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            // Login
+            const result = await Auth.login(email, password);
             
-            // Update dots
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentIndex);
-            });
-        };
-        
-        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
-        
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => goToSlide(index));
-        });
-        
-        // Auto-play
-        setInterval(() => goToSlide(currentIndex + 1), 5000);
-    },
-    
-    // Update Auth UI
-    updateAuthUI() {
-        const authButtons = document.getElementById('auth-buttons');
-        const userMenu = document.getElementById('user-menu');
-        const cartBtn = document.getElementById('cart-btn');
-        const mobileAuth = document.getElementById('mobile-auth');
-        
-        if (State.isAuthenticated && State.user) {
-            // Show user menu
-            if (authButtons) authButtons.style.display = 'none';
-            if (userMenu) {
-                userMenu.style.display = 'block';
-                document.getElementById('user-name').textContent = State.user.name.split(' ')[0];
-                document.getElementById('user-fullname').textContent = State.user.name;
-                document.getElementById('user-email').textContent = State.user.email;
-                
-                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(State.user.name)}&background=6366f1&color=fff`;
-                document.getElementById('user-avatar').src = avatarUrl;
-                document.getElementById('user-avatar-lg').src = avatarUrl;
-            }
-            if (cartBtn) cartBtn.style.display = 'flex';
-            if (mobileAuth) mobileAuth.style.display = 'none';
+            // Hide loading
+            btn.disabled = false;
+            btn.querySelector('.btn-text').classList.remove('hidden');
+            btn.querySelector('.btn-loader').classList.add('hidden');
             
-            // Update cart count
-            this.updateCartCount();
-        } else {
-            // Show auth buttons
-            if (authButtons) authButtons.style.display = 'flex';
-            if (userMenu) userMenu.style.display = 'none';
-            if (cartBtn) cartBtn.style.display = 'none';
-            if (mobileAuth) mobileAuth.style.display = 'flex';
-        }
-    },
-    
-    updateCartCount() {
-        const cartCount = document.getElementById('cart-count');
-        if (cartCount) {
-            cartCount.textContent = State.cart.length;
-            cartCount.style.display = State.cart.length > 0 ? 'flex' : 'none';
-        }
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   11. AUTHENTICATION
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const Auth = {
-    async login(email, password) {
-        try {
-            const result = await API.login(email, password);
-            
-            if (result.success && result.user) {
-                State.user = result.user;
-                State.isAuthenticated = true;
-                State.saveUser();
-                
-                // Load enrollments
-                await this.loadEnrollments();
-                
-                UI.updateAuthUI();
-                Toast.success('Welcome back!', 'Login Successful');
-                
-                // Redirect
-                if (State.previousPage && State.previousPage !== 'login' && State.previousPage !== 'register') {
-                    Router.navigate(State.previousPage);
-                } else {
-                    Router.navigate('dashboard');
-                }
-                
-                return true;
-            }
-        } catch (error) {
-            Toast.error(error.message || 'Login failed. Please try again.');
-            return false;
-        }
-    },
-    
-    async register(name, email, phone, password) {
-        try {
-            const result = await API.register(name, email, phone, password);
-            
-            if (result.success && result.user) {
-                State.user = result.user;
-                State.isAuthenticated = true;
-                State.saveUser();
-                
-                UI.updateAuthUI();
-                Toast.success('Welcome to LearnVerse!', 'Registration Successful');
-                
-                Router.navigate('dashboard');
-                return true;
-            }
-        } catch (error) {
-            Toast.error(error.message || 'Registration failed. Please try again.');
-            return false;
-        }
-    },
-    
-    logout() {
-        Modal.confirm(
-            'Logout',
-            'Are you sure you want to logout?',
-            () => {
-                State.user = null;
-                State.isAuthenticated = false;
-                State.enrollments = [];
-                localStorage.removeItem('learnverse_user');
-                
-                UI.updateAuthUI();
-                Toast.info('You have been logged out');
-                Router.navigate('home');
-            }
-        );
-    },
-    
-    async loadEnrollments() {
-        try {
-            const result = await API.getEnrollments();
             if (result.success) {
-                State.enrollments = result.enrollments || [];
+                Toast.success('Welcome Back!', 'You have logged in successfully');
+                Router.navigate('/dashboard');
+            } else {
+                Toast.error('Login Failed', result.error || 'Invalid email or password');
             }
-        } catch (error) {
-            console.error('Failed to load enrollments:', error);
-        }
-    },
-    
-    isEnrolled(courseId) {
-        return State.enrollments.some(e => e.courseId === courseId);
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   12. AUTH PAGE
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const AuthPage = {
-    init() {
-        this.initLoginForm();
-        this.initRegisterForm();
-        this.initPasswordToggles();
-        this.initPasswordStrength();
-    },
-    
-    initLoginForm() {
-        const form = document.getElementById('login-form');
-        if (!form) return;
-        
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            const submitBtn = document.getElementById('login-submit');
-            
-            // Validation
-            if (!Utils.isValidEmail(email)) {
-                this.showError('login-email', 'Please enter a valid email address');
-                return;
-            }
-            
-            if (password.length < 6) {
-                this.showError('login-password', 'Password must be at least 6 characters');
-                return;
-            }
-            
-            // Submit
-            Loading.buttonStart(submitBtn);
-            await Auth.login(email, password);
-            Loading.buttonStop(submitBtn);
         });
+        
+        // Toggle password visibility
+        UI.initPasswordToggles();
     },
     
-    initRegisterForm() {
-        const form = document.getElementById('register-form');
-        if (!form) return;
+    // REGISTER PAGE
+    register() {
+        const form = document.getElementById('registerForm');
+        const passwordInput = document.getElementById('registerPassword');
         
-        form.addEventListener('submit', async (e) => {
+        // Password strength indicator
+        passwordInput?.addEventListener('input', (e) => {
+            const strength = Utils.getPasswordStrength(e.target.value);
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            
+            if (fill) {
+                fill.className = `strength-fill ${strength.class}`;
+            }
+            if (text) {
+                text.textContent = strength.text;
+                text.className = `strength-text text-${strength.class === 'weak' ? 'error' : strength.class === 'strong' ? 'success' : 'warning'}`;
+            }
+        });
+        
+        form?.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const name = document.getElementById('register-name').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const phone = document.getElementById('register-phone').value.trim();
-            const password = document.getElementById('register-password').value;
-            const terms = document.getElementById('accept-terms').checked;
-            const submitBtn = document.getElementById('register-submit');
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            const btn = document.getElementById('registerBtn');
             
-            // Validation
+            // Validate
+            let hasError = false;
+            
             if (name.length < 2) {
-                this.showError('register-name', 'Please enter your full name');
-                return;
+                document.getElementById('registerNameError').textContent = 'Name is too short';
+                hasError = true;
             }
             
             if (!Utils.isValidEmail(email)) {
-                this.showError('register-email', 'Please enter a valid email address');
-                return;
+                document.getElementById('registerEmailError').textContent = 'Please enter a valid email';
+                hasError = true;
             }
             
             if (!Utils.isValidPhone(phone)) {
-                this.showError('register-phone', 'Please enter a valid 10-digit phone number');
-                return;
+                document.getElementById('registerPhoneError').textContent = 'Please enter a valid 10-digit phone number';
+                hasError = true;
             }
             
             if (password.length < 8) {
-                this.showError('register-password', 'Password must be at least 8 characters');
+                document.getElementById('registerPasswordError').textContent = 'Password must be at least 8 characters';
+                hasError = true;
+            }
+            
+            if (!agreeTerms) {
+                Toast.error('Terms Required', 'Please agree to the terms and conditions');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            // Show loading
+            btn.disabled = true;
+            btn.querySelector('.btn-text').classList.add('hidden');
+            btn.querySelector('.btn-loader').classList.remove('hidden');
+            
+            // Register
+            const result = await Auth.register(name, email, phone, password);
+            
+            // Hide loading
+            btn.disabled = false;
+            btn.querySelector('.btn-text').classList.remove('hidden');
+            btn.querySelector('.btn-loader').classList.add('hidden');
+            
+            if (result.success) {
+                Toast.success('Welcome!', 'Your account has been created successfully');
+                Router.navigate('/dashboard');
+            } else {
+                Toast.error('Registration Failed', result.error || 'Something went wrong');
+            }
+        });
+        
+        // Toggle password visibility
+        UI.initPasswordToggles();
+    },
+    
+    // FORGOT PASSWORD PAGE
+    forgotPassword() {
+        const form = document.getElementById('forgotPasswordForm');
+        
+        form?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value;
+            const btn = document.getElementById('forgotBtn');
+            
+            if (!Utils.isValidEmail(email)) {
+                document.getElementById('forgotEmailError').textContent = 'Please enter a valid email';
                 return;
             }
             
-            if (!terms) {
-                Toast.warning('Please accept the terms and conditions');
-                return;
-            }
+            // Show loading
+            btn.disabled = true;
+            btn.querySelector('.btn-text').classList.add('hidden');
+            btn.querySelector('.btn-loader').classList.remove('hidden');
             
-            // Submit
-            Loading.buttonStart(submitBtn);
-            await Auth.register(name, email, phone, password);
-            Loading.buttonStop(submitBtn);
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Hide loading
+            btn.disabled = false;
+            btn.querySelector('.btn-text').classList.remove('hidden');
+            btn.querySelector('.btn-loader').classList.add('hidden');
+            
+            Toast.success('Email Sent', 'If an account exists with this email, you will receive a password reset link');
         });
     },
     
-    initPasswordToggles() {
-        document.querySelectorAll('.password-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.dataset.target;
-                const input = document.getElementById(targetId);
-                const eyeOpen = btn.querySelector('.eye-open');
-                const eyeClosed = btn.querySelector('.eye-closed');
-                
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    eyeOpen.style.display = 'none';
-                    eyeClosed.style.display = 'block';
-                } else {
-                    input.type = 'password';
-                    eyeOpen.style.display = 'block';
-                    eyeClosed.style.display = 'none';
-                }
-            });
-        });
-    },
-    
-    initPasswordStrength() {
-        const passwordInput = document.getElementById('register-password');
-        if (!passwordInput) return;
+    // DASHBOARD PAGE
+    async dashboard() {
+        const user = Auth.getUser();
         
-        passwordInput.addEventListener('input', (e) => {
-            const password = e.target.value;
-            const strength = Utils.getPasswordStrength(password);
-            
-            // Update strength bar
-            const strengthFill = document.querySelector('.strength-fill');
-            const strengthText = document.querySelector('.strength-text');
-            
-            if (strengthFill) {
-                strengthFill.className = 'strength-fill ' + strength;
-            }
-            if (strengthText) {
-                strengthText.textContent = strength.charAt(0).toUpperCase() + strength.slice(1) + ' password';
-            }
-            
-            // Update requirements
-            this.updatePasswordRequirement('req-length', password.length >= 8);
-            this.updatePasswordRequirement('req-upper', /[A-Z]/.test(password));
-            this.updatePasswordRequirement('req-lower', /[a-z]/.test(password));
-            this.updatePasswordRequirement('req-number', /[0-9]/.test(password));
-        });
-    },
-    
-    updatePasswordRequirement(id, isValid) {
-        const el = document.getElementById(id);
-        if (!el) return;
+        // Set welcome name
+        const welcomeName = document.getElementById('welcomeName');
+        if (welcomeName) welcomeName.textContent = user?.name?.split(' ')[0] || 'User';
         
-        el.classList.toggle('valid', isValid);
-        el.querySelector('.req-icon').textContent = isValid ? '✓' : '○';
-    },
-    
-    showError(inputId, message) {
-        const errorEl = document.getElementById(`${inputId}-error`);
-        const inputEl = document.getElementById(inputId);
-        
-        if (errorEl) {
-            errorEl.textContent = message;
+        // Set header user info
+        const headerAvatar = document.getElementById('headerAvatar');
+        const headerUsername = document.getElementById('headerUsername');
+        if (headerAvatar) {
+            headerAvatar.src = user?.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=6366f1&color=fff`;
         }
-        if (inputEl) {
-            inputEl.parentElement.parentElement.classList.add('error');
-            inputEl.focus();
-            
-            // Remove error on input
-            inputEl.addEventListener('input', () => {
-                inputEl.parentElement.parentElement.classList.remove('error');
-                if (errorEl) errorEl.textContent = '';
-            }, { once: true });
+        if (headerUsername) headerUsername.textContent = user?.name?.split(' ')[0] || 'User';
+        
+        // Load enrollments
+        const enrollmentsResult = await API.getEnrollments();
+        const enrollments = enrollmentsResult.success ? enrollmentsResult.data : [];
+        
+        // Update stats
+        document.getElementById('enrolledCount').textContent = enrollments.length;
+        document.getElementById('completedCount').textContent = enrollments.filter(e => e.progress === 100).length;
+        document.getElementById('certificatesCount').textContent = enrollments.filter(e => e.progress === 100).length;
+        document.getElementById('hoursWatched').textContent = Math.floor(Math.random() * 50) + 5; // Demo data
+        
+        // Render continue learning
+        const continueCourses = document.getElementById('continueCourses');
+        if (continueCourses) {
+            if (enrollments.length === 0) {
+                continueCourses.innerHTML = `
+                    <div class="empty-state">
+                        <p>You haven't enrolled in any courses yet.</p>
+                        <a href="#/courses" class="btn btn-primary" data-link>Browse Courses</a>
+                    </div>
+                `;
+            } else {
+                continueCourses.innerHTML = enrollments.slice(0, 3).map(enrollment => {
+                    const course = DEMO_DATA.courses.find(c => c.id === enrollment.courseId);
+                    if (!course) return '';
+                    
+                    return `
+                        <div class="continue-card" onclick="Router.navigate('/learn/${course.id}/${course.sections?.[0]?.lessons?.[0]?.id || ''}')">
+                            <div class="continue-thumbnail">${course.category === 'development' ? '💻' : course.category === 'design' ? '🎨' : '📚'}</div>
+                            <div class="continue-info">
+                                <h4 class="continue-title">${Utils.escapeHtml(course.title)}</h4>
+                                <div class="continue-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${enrollment.progress || 0}%"></div>
+                                    </div>
+                                    <span class="progress-text">${enrollment.progress || 0}% complete</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
         }
+        
+        // Render recommended courses
+        const recommendedCourses = document.getElementById('recommendedCourses');
+        if (recommendedCourses) {
+            const notEnrolledCourses = DEMO_DATA.courses.filter(c => 
+                !enrollments.some(e => e.courseId === c.id)
+            ).slice(0, 3);
+            
+            recommendedCourses.innerHTML = notEnrolledCourses.map(course => Components.courseCard(course)).join('');
+        }
+        
+        // Initialize sidebar
+        Pages.initDashboardSidebar();
     },
     
-    clearErrors() {
-        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-        document.querySelectorAll('.form-group.error').forEach(el => el.classList.remove('error'));
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   13. HOME PAGE
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const HomePage = {
-    init() {
-        this.loadFeaturedCourses();
-        this.initCategoryTabs();
-        this.initHeroParallax();
-        this.initNewsletterForm();
+    initDashboardSidebar() {
+        // Sidebar toggle for mobile
+        document.getElementById('sidebarToggle')?.addEventListener('click', () => {
+            document.getElementById('dashboardSidebar')?.classList.toggle('show');
+        });
+        
+        // Logout buttons
+        document.getElementById('sidebarLogoutBtn')?.addEventListener('click', () => {
+            Auth.logout();
+        });
+        
+        // Theme toggle in header
+        document.getElementById('headerThemeToggle')?.addEventListener('click', () => {
+            UI.toggleTheme();
+        });
     },
     
-    async loadFeaturedCourses() {
-        const grid = document.getElementById('featured-course-grid');
+    // MY COURSES PAGE
+    async myCourses() {
+        await Pages.dashboard(); // Initialize sidebar and header
+        
+        const grid = document.getElementById('myCoursesGrid');
         if (!grid) return;
         
-        try {
-            // Use demo data
-            const courses = DemoData.courses.filter(c => c.isFeatured);
-            State.featuredCourses = courses;
-            
-            this.renderCourses(courses, grid);
-        } catch (error) {
-            console.error('Failed to load courses:', error);
-            grid.innerHTML = '<p class="error">Failed to load courses. Please try again.</p>';
-        }
-    },
-    
-    renderCourses(courses, container) {
-        if (courses.length === 0) {
-            container.innerHTML = '<p class="text-center text-secondary">No courses found.</p>';
+        const enrollmentsResult = await API.getEnrollments();
+        const enrollments = enrollmentsResult.success ? enrollmentsResult.data : [];
+        
+        if (enrollments.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📚</div>
+                    <h3>No courses yet</h3>
+                    <p>Start learning by enrolling in a course!</p>
+                    <a href="#/courses" class="btn btn-primary" data-link>Browse Courses</a>
+                </div>
+            `;
             return;
         }
         
-        container.innerHTML = courses.map(course => this.createCourseCard(course)).join('');
+        grid.innerHTML = enrollments.map(enrollment => {
+            const course = DEMO_DATA.courses.find(c => c.id === enrollment.courseId);
+            if (!course) return '';
+            
+            return Components.enrolledCourseCard(course, enrollment);
+        }).join('');
         
-        // Add event listeners
-        container.querySelectorAll('.course-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (!e.target.closest('.wishlist-icon') && !e.target.closest('.enroll-btn')) {
-                    const courseId = card.dataset.courseId;
-                    const course = DemoData.courses.find(c => c.id === courseId);
-                    if (course) {
-                        State.currentCourse = course;
-                        Router.navigate('course-detail', { courseSlug: course.slug });
-                    }
-                }
-            });
-        });
-        
-        // Wishlist buttons
-        container.querySelectorAll('.wishlist-icon').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const courseId = btn.closest('.course-card').dataset.courseId;
-                this.toggleWishlist(courseId, btn);
-            });
-        });
-        
-        // Enroll buttons
-        container.querySelectorAll('.enroll-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const courseId = btn.closest('.course-card').dataset.courseId;
-                Cart.add(courseId);
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Filter logic here
             });
         });
     },
     
-    createCourseCard(course) {
-        const isWishlisted = State.wishlist.includes(course.id);
+    // WISHLIST PAGE
+    async wishlist() {
+        await Pages.dashboard();
+        // Wishlist logic
+    },
+    
+    // CERTIFICATES PAGE
+    async certificates() {
+        await Pages.dashboard();
+        
+        const grid = document.getElementById('certificatesGrid');
+        const emptyState = document.getElementById('emptyCertificates');
+        
+        const enrollmentsResult = await API.getEnrollments();
+        const completedEnrollments = (enrollmentsResult.data || []).filter(e => e.progress === 100);
+        
+        if (completedEnrollments.length === 0) {
+            grid?.classList.add('hidden');
+            emptyState?.classList.remove('hidden');
+        } else {
+            emptyState?.classList.add('hidden');
+            grid?.classList.remove('hidden');
+            // Render certificates
+        }
+    },
+    
+    // SETTINGS PAGE
+    async settings() {
+        await Pages.dashboard();
+        
+        const user = Auth.getUser();
+        
+        // Populate form
+        document.getElementById('settingsName').value = user?.name || '';
+        document.getElementById('settingsEmail').value = user?.email || '';
+        document.getElementById('settingsPhone').value = user?.phone || '';
+        document.getElementById('photoInitials').textContent = Utils.getInitials(user?.name || 'User');
+        
+        // Settings tabs
+        document.querySelectorAll('.settings-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}Panel`)?.classList.add('active');
+            });
+        });
+        
+        // Profile form
+        document.getElementById('profileForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            Toast.success('Profile Updated', 'Your profile has been updated successfully');
+        });
+        
+        // Password form
+        document.getElementById('passwordForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            Toast.success('Password Changed', 'Your password has been changed successfully');
+        });
+    },
+    
+    // CHECKOUT PAGE
+    async checkout(params) {
+        const courseResult = await API.getCourse(params.courseId);
+        
+        if (!courseResult.success) {
+            Toast.error('Error', 'Course not found');
+            Router.navigate('/courses');
+            return;
+        }
+        
+        const course = courseResult.data;
+        let appliedCoupon = null;
+        let finalAmount = course.discountPrice || course.price;
+        
+        // Render order item
+        const orderItem = document.getElementById('orderItem');
+        if (orderItem) {
+            orderItem.innerHTML = `
+                <div class="order-thumbnail">${course.category === 'development' ? '💻' : '📚'}</div>
+                <div class="order-info">
+                    <h3>${Utils.escapeHtml(course.title)}</h3>
+                    <p>By ${Utils.escapeHtml(course.instructor)} • ${course.totalDuration}</p>
+                    <p>Validity: ${course.validity} days</p>
+                </div>
+            `;
+        }
+        
+        // Update prices
+        const updatePrices = () => {
+            document.getElementById('originalPrice').textContent = Utils.formatCurrency(course.price);
+            
+            if (course.discountPrice && course.discountPrice < course.price) {
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountAmount').textContent = `-${Utils.formatCurrency(course.price - course.discountPrice)}`;
+            }
+            
+            if (appliedCoupon) {
+                document.getElementById('couponDiscountRow').style.display = 'flex';
+                let couponDiscount = 0;
+                if (appliedCoupon.discountType === 'percent') {
+                    couponDiscount = Math.floor(finalAmount * appliedCoupon.discountValue / 100);
+                } else {
+                    couponDiscount = appliedCoupon.discountValue;
+                }
+                finalAmount -= couponDiscount;
+                document.getElementById('couponDiscountAmount').textContent = `-${Utils.formatCurrency(couponDiscount)}`;
+            }
+            
+            document.getElementById('totalPrice').textContent = Utils.formatCurrency(finalAmount);
+        };
+        
+        updatePrices();
+        
+        // Apply coupon
+        document.getElementById('applyCouponBtn')?.addEventListener('click', async () => {
+            const code = document.getElementById('couponInput').value.trim();
+            if (!code) return;
+            
+            const result = await API.validateCoupon(code, course.id);
+            const messageEl = document.getElementById('couponMessage');
+            
+            if (result.success) {
+                appliedCoupon = result.data;
+                messageEl.textContent = `Coupon applied! ${appliedCoupon.discountType === 'percent' ? appliedCoupon.discountValue + '%' : Utils.formatCurrency(appliedCoupon.discountValue)} off`;
+                messageEl.className = 'coupon-message success';
+                finalAmount = course.discountPrice || course.price;
+                updatePrices();
+            } else {
+                messageEl.textContent = result.error || 'Invalid coupon code';
+                messageEl.className = 'coupon-message error';
+            }
+        });
+        
+        // Pay now button
+        document.getElementById('payNowBtn')?.addEventListener('click', async () => {
+            const btn = document.getElementById('payNowBtn');
+            btn.disabled = true;
+            btn.querySelector('.btn-text')?.classList.add('hidden');
+            btn.querySelector('.btn-loader')?.classList.remove('hidden');
+            
+            // Create order
+            const orderResult = await API.createOrder(course.id, finalAmount, appliedCoupon?.code);
+            
+            if (!orderResult.success) {
+                Toast.error('Error', 'Failed to create order');
+                btn.disabled = false;
+                btn.querySelector('.btn-text')?.classList.remove('hidden');
+                btn.querySelector('.btn-loader')?.classList.add('hidden');
+                return;
+            }
+            
+            // In demo mode, simulate successful payment
+            if (CONFIG.DEMO_MODE) {
+                await API.verifyPayment({
+                    courseId: course.id,
+                    orderId: orderResult.data.orderId
+                });
+                
+                Toast.success('Payment Successful!', 'You have been enrolled in the course');
+                Router.navigate('/payment-success?course=' + course.id);
+                return;
+            }
+            
+            // Initialize Razorpay
+            const options = {
+                key: CONFIG.RAZORPAY_KEY_ID,
+                amount: finalAmount * 100,
+                currency: 'INR',
+                name: CONFIG.SITE_NAME,
+                description: course.title,
+                order_id: orderResult.data.razorpayOrderId,
+                handler: async function(response) {
+                    // Verify payment
+                    const verifyResult = await API.verifyPayment({
+                        courseId: course.id,
+                        orderId: orderResult.data.orderId,
+                        razorpayPaymentId: response.razorpay_payment_id,
+                        razorpayOrderId: response.razorpay_order_id,
+                        razorpaySignature: response.razorpay_signature
+                    });
+                    
+                    if (verifyResult.success) {
+                        Toast.success('Payment Successful!', 'You have been enrolled in the course');
+                        Router.navigate('/payment-success?course=' + course.id);
+                    } else {
+                        Toast.error('Payment Failed', 'Please contact support');
+                    }
+                },
+                prefill: {
+                    name: Auth.getUser()?.name,
+                    email: Auth.getUser()?.email,
+                    contact: Auth.getUser()?.phone
+                },
+                theme: {
+                    color: '#6366f1'
+                },
+                modal: {
+                    ondismiss: function() {
+                        btn.disabled = false;
+                        btn.querySelector('.btn-text')?.classList.remove('hidden');
+                        btn.querySelector('.btn-loader')?.classList.add('hidden');
+                    }
+                }
+            };
+            
+            const razorpay = new Razorpay(options);
+            razorpay.open();
+        });
+    },
+    
+    // PAYMENT SUCCESS PAGE
+    async paymentSuccess(params, query) {
+        const courseId = query.course;
+        
+        if (courseId) {
+            const course = DEMO_DATA.courses.find(c => c.id === courseId);
+            
+            if (course) {
+                const orderDetails = document.getElementById('orderDetails');
+                if (orderDetails) {
+                    orderDetails.innerHTML = `
+                        <div class="order-details-row">
+                            <span>Course</span>
+                            <span>${Utils.escapeHtml(course.title)}</span>
+                        </div>
+                        <div class="order-details-row">
+                            <span>Amount Paid</span>
+                            <span>${Utils.formatCurrency(course.discountPrice || course.price)}</span>
+                        </div>
+                        <div class="order-details-row">
+                            <span>Access Valid Until</span>
+                            <span>${Utils.formatDate(new Date(Date.now() + course.validity * 24 * 60 * 60 * 1000))}</span>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // Confetti effect
+        UI.showConfetti();
+    },
+    
+    // ABOUT PAGE
+    about() {
+        // Static page, no special handling needed
+    },
+    
+    // CONTACT PAGE
+    contact() {
+        const form = document.getElementById('contactForm');
+        
+        form?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            Toast.success('Message Sent', 'We\'ll get back to you within 24 hours');
+            form.reset();
+        });
+    },
+    
+    // HELP PAGE
+    help() {
+        // Static page
+    },
+    
+    // TERMS PAGE
+    terms() {
+        // Static page
+    },
+    
+    // PRIVACY PAGE
+    privacy() {
+        // Static page
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPONENTS (HTML Templates)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const Components = {
+    // Course Card
+    courseCard(course) {
+        const discount = course.discountPrice ? Utils.calculateDiscount(course.price, course.discountPrice) : 0;
+        const iconMap = {
+            'development': '💻',
+            'design': '🎨',
+            'marketing': '📈',
+            'business': '💼',
+            'data-science': '📊',
+            'mobile': '📱'
+        };
         
         return `
-            <article class="course-card" data-course-id="${course.id}">
-                <div class="card-image">
-                    <img src="${course.thumbnail}" alt="${course.title}" loading="lazy">
-                    <div class="card-overlay">
-                        <span class="play-icon">▶</span>
+            <div class="course-card" onclick="Router.navigate('/course/${course.slug}')">
+                <div class="course-thumbnail">
+                    ${course.thumbnail 
+                        ? `<img src="${course.thumbnail}" alt="${Utils.escapeHtml(course.title)}">`
+                        : `<div class="course-thumbnail-placeholder">${iconMap[course.category] || '📚'}</div>`
+                    }
+                    <div class="course-play-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
                     </div>
-                    <button class="wishlist-icon ${isWishlisted ? 'active' : ''}" aria-label="Add to wishlist">
-                        <svg viewBox="0 0 24 24" fill="${isWishlisted ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                    <span class="course-badge">${Utils.escapeHtml(course.category)}</span>
+                    <button class="course-wishlist" onclick="event.stopPropagation(); Wishlist.toggle('${course.id}')" aria-label="Add to wishlist">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                         </svg>
                     </button>
-                    <span class="card-category">${course.category}</span>
                 </div>
-                <div class="card-body">
-                    <h3 class="card-title">${course.title}</h3>
-                    <div class="card-instructor">
-                        <img src="${course.instructorImage}" alt="${course.instructor}" class="instructor-avatar">
-                        <span class="instructor-name">${course.instructor}</span>
+                <div class="course-content">
+                    <span class="course-category">${Utils.escapeHtml(course.category)}</span>
+                    <h3 class="course-title">${Utils.escapeHtml(course.title)}</h3>
+                    <div class="course-instructor">
+                        <div class="instructor-avatar">${Utils.getInitials(course.instructor)}</div>
+                        <span class="instructor-name">${Utils.escapeHtml(course.instructor)}</span>
                     </div>
-                    <div class="card-meta">
-                        <span class="rating">⭐ ${course.rating} (${course.reviewCount.toLocaleString()})</span>
-                        <span>${course.totalDuration}</span>
-                    </div>
-                    <div class="card-footer">
-                        <div>
-                            <span class="price">${Utils.formatPrice(course.price)}</span>
-                            <span class="original-price">${Utils.formatPrice(course.originalPrice)}</span>
+                    <div class="course-meta">
+                        <div class="course-rating">
+                            ⭐ <span>${course.rating}</span> (${course.reviewCount})
                         </div>
-                        <button class="btn btn-primary btn-sm enroll-btn">Enroll Now</button>
+                        <span>${course.totalDuration}</span>
+                        <span>${course.totalLessons} lessons</span>
+                    </div>
+                    <div class="course-footer">
+                        <div class="course-price">
+                            <span class="price-current">${Utils.formatCurrency(course.discountPrice || course.price)}</span>
+                            ${discount > 0 ? `<span class="price-original">${Utils.formatCurrency(course.price)}</span>` : ''}
+                        </div>
+                        <button class="course-enroll-btn">View Course</button>
                     </div>
                 </div>
-            </article>
+            </div>
         `;
     },
     
-    toggleWishlist(courseId, btn) {
-        if (!State.isAuthenticated) {
-            Toast.warning('Please login to add to wishlist');
-            Router.navigate('login');
-            return;
-        }
-        
-        const index = State.wishlist.indexOf(courseId);
-        
-        if (index === -1) {
-            State.wishlist.push(courseId);
-            btn.classList.add('active');
-            btn.querySelector('svg').setAttribute('fill', 'currentColor');
-            Toast.success('Added to wishlist');
-        } else {
-            State.wishlist.splice(index, 1);
-            btn.classList.remove('active');
-            btn.querySelector('svg').setAttribute('fill', 'none');
-            Toast.info('Removed from wishlist');
-        }
-        
-        State.saveWishlist();
-    },
-    
-    initCategoryTabs() {
-        const tabs = document.querySelectorAll('#category-tabs .filter-tab');
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Update active tab
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Filter courses
-                const filter = tab.dataset.filter;
-                let filteredCourses = DemoData.courses.filter(c => c.isFeatured);
-                
-                if (filter !== 'all') {
-                    filteredCourses = filteredCourses.filter(c => c.category === filter);
-                }
-                
-                const grid = document.getElementById('featured-course-grid');
-                this.renderCourses(filteredCourses, grid);
-            });
-        });
-    },
-    
-    initHeroParallax() {
-        const heroCards = document.getElementById('hero-cards');
-        if (!heroCards) return;
-        
-        document.addEventListener('mousemove', Utils.throttle((e) => {
-            const { clientX, clientY } = e;
-            const { innerWidth, innerHeight } = window;
-            
-            const moveX = (clientX - innerWidth / 2) / 50;
-            const moveY = (clientY - innerHeight / 2) / 50;
-            
-            heroCards.style.transform = `translate(${moveX}px, ${moveY}px)`;
-        }, 50));
-    },
-    
-    initNewsletterForm() {
-        const form = document.getElementById('newsletter-form');
-        if (!form) return;
-        
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const email = form.querySelector('input[type="email"]').value;
-            
-            if (!Utils.isValidEmail(email)) {
-                Toast.error('Please enter a valid email address');
-                return;
-            }
-            
-            // Simulate subscription
-            Toast.success('Thank you for subscribing!');
-            form.reset();
-        });
-    }
-};
-/* ═══════════════════════════════════════════════════════════════════════════
-   14. COURSES PAGE
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const CoursesPage = {
-    init() {
-        this.loadCourses();
-        this.initFilters();
-        this.initSort();
-        this.initViewToggle();
-        this.initPriceRange();
-        this.initMobileFilters();
-        this.initSearch();
-    },
-    
-    async loadCourses() {
-        const grid = document.getElementById('all-courses-grid');
-        if (!grid) return;
-        
-        // Show loading
-        grid.innerHTML = `
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-            <div class="skeleton-card"></div>
-        `;
-        
-        try {
-            // Use demo data
-            State.courses = [...DemoData.courses];
-            this.applyFiltersAndRender();
-        } catch (error) {
-            console.error('Failed to load courses:', error);
-            grid.innerHTML = '<p class="error">Failed to load courses. Please try again.</p>';
-        }
-    },
-    
-    applyFiltersAndRender() {
-        let filtered = [...State.courses];
-        
-        // Category filter
-        if (State.filters.category.length > 0) {
-            filtered = filtered.filter(c => State.filters.category.includes(c.category));
-        }
-        
-        // Level filter
-        if (State.filters.level.length > 0) {
-            filtered = filtered.filter(c => State.filters.level.includes(c.level));
-        }
-        
-        // Duration filter
-        if (State.filters.duration.length > 0) {
-            filtered = filtered.filter(c => {
-                const hours = parseInt(c.totalDuration);
-                return State.filters.duration.some(d => {
-                    if (d === '0-2') return hours <= 2;
-                    if (d === '2-5') return hours > 2 && hours <= 5;
-                    if (d === '5-10') return hours > 5 && hours <= 10;
-                    if (d === '10+') return hours > 10;
-                    return true;
-                });
-            });
-        }
-        
-        // Price filter
-        if (State.filters.priceRange < 5000) {
-            filtered = filtered.filter(c => c.price <= State.filters.priceRange);
-        }
-        
-        // Rating filter
-        if (State.filters.rating) {
-            filtered = filtered.filter(c => c.rating >= parseFloat(State.filters.rating));
-        }
-        
-        // Search filter
-        if (State.filters.search) {
-            const query = State.filters.search.toLowerCase();
-            filtered = filtered.filter(c =>
-                c.title.toLowerCase().includes(query) ||
-                c.instructor.toLowerCase().includes(query) ||
-                c.category.toLowerCase().includes(query)
-            );
-        }
-        
-        // Sort
-        switch (State.filters.sort) {
-            case 'newest':
-                filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-                break;
-            case 'price-low':
-                filtered.sort((a, b) => a.price - b.price);
-                break;
-            case 'price-high':
-                filtered.sort((a, b) => b.price - a.price);
-                break;
-            case 'rating':
-                filtered.sort((a, b) => b.rating - a.rating);
-                break;
-            default: // popular
-                filtered.sort((a, b) => b.enrolledCount - a.enrolledCount);
-        }
-        
-        // Update count
-        const countEl = document.getElementById('courses-count');
-        if (countEl) countEl.textContent = filtered.length;
-        
-        // Render
-        this.renderCourses(filtered);
-        
-        // Show/hide empty state
-        const emptyState = document.getElementById('courses-empty');
-        const pagination = document.getElementById('courses-pagination');
-        
-        if (filtered.length === 0) {
-            if (emptyState) emptyState.style.display = 'block';
-            if (pagination) pagination.style.display = 'none';
-        } else {
-            if (emptyState) emptyState.style.display = 'none';
-            if (pagination) pagination.style.display = 'flex';
-        }
-    },
-    
-    renderCourses(courses) {
-        const grid = document.getElementById('all-courses-grid');
-        if (!grid) return;
-        
-        if (courses.length === 0) {
-            grid.innerHTML = '';
-            return;
-        }
-        
-        grid.innerHTML = courses.map(course => HomePage.createCourseCard(course)).join('');
-        
-        // Add event listeners (reuse from HomePage)
-        grid.querySelectorAll('.course-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (!e.target.closest('.wishlist-icon') && !e.target.closest('.enroll-btn')) {
-                    const courseId = card.dataset.courseId;
-                    const course = DemoData.courses.find(c => c.id === courseId);
-                    if (course) {
-                        State.currentCourse = course;
-                        Router.navigate('course-detail', { courseSlug: course.slug });
-                    }
-                }
-            });
-        });
-        
-        grid.querySelectorAll('.wishlist-icon').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const courseId = btn.closest('.course-card').dataset.courseId;
-                HomePage.toggleWishlist(courseId, btn);
-            });
-        });
-        
-        grid.querySelectorAll('.enroll-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const courseId = btn.closest('.course-card').dataset.courseId;
-                Cart.add(courseId);
-            });
-        });
-    },
-    
-    initFilters() {
-        // Category checkboxes
-        document.querySelectorAll('input[name="category"]').forEach(cb => {
-            cb.addEventListener('change', () => {
-                State.filters.category = Array.from(
-                    document.querySelectorAll('input[name="category"]:checked')
-                ).map(el => el.value);
-                this.applyFiltersAndRender();
-            });
-        });
-        
-        // Level checkboxes
-        document.querySelectorAll('input[name="level"]').forEach(cb => {
-            cb.addEventListener('change', () => {
-                State.filters.level = Array.from(
-                    document.querySelectorAll('input[name="level"]:checked')
-                ).map(el => el.value);
-                this.applyFiltersAndRender();
-            });
-        });
-        
-        // Duration checkboxes
-        document.querySelectorAll('input[name="duration"]').forEach(cb => {
-            cb.addEventListener('change', () => {
-                State.filters.duration = Array.from(
-                    document.querySelectorAll('input[name="duration"]:checked')
-                ).map(el => el.value);
-                this.applyFiltersAndRender();
-            });
-        });
-        
-        // Rating radio
-        document.querySelectorAll('input[name="rating"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                State.filters.rating = e.target.value;
-                this.applyFiltersAndRender();
-            });
-        });
-        
-        // Clear filters
-        const clearBtn = document.getElementById('clear-filters');
-        if (clearBtn) {
-            clearBtn.addEventListener('click', () => this.clearFilters());
-        }
-        
-        const resetBtn = document.getElementById('reset-filters');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => this.clearFilters());
-        }
-    },
-    
-    clearFilters() {
-        State.filters = {
-            category: [],
-            level: [],
-            duration: [],
-            rating: null,
-            priceRange: 5000,
-            search: '',
-            sort: 'popular'
-        };
-        
-        // Reset UI
-        document.querySelectorAll('.filters-sidebar input[type="checkbox"]').forEach(cb => cb.checked = false);
-        document.querySelectorAll('.filters-sidebar input[type="radio"]').forEach(r => r.checked = false);
-        
-        const priceRange = document.getElementById('price-range');
-        if (priceRange) priceRange.value = 5000;
-        
-        const priceValue = document.getElementById('price-value');
-        if (priceValue) priceValue.textContent = '₹5000';
-        
-        const searchInput = document.getElementById('courses-search');
-        if (searchInput) searchInput.value = '';
-        
-        const sortSelect = document.getElementById('sort-courses');
-        if (sortSelect) sortSelect.value = 'popular';
-        
-        this.applyFiltersAndRender();
-        Toast.info('Filters cleared');
-    },
-    
-    initSort() {
-        const sortSelect = document.getElementById('sort-courses');
-        if (!sortSelect) return;
-        
-        sortSelect.addEventListener('change', (e) => {
-            State.filters.sort = e.target.value;
-            this.applyFiltersAndRender();
-        });
-    },
-    
-    initViewToggle() {
-        const viewBtns = document.querySelectorAll('.view-btn');
-        const grid = document.getElementById('all-courses-grid');
-        
-        viewBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                viewBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                const view = btn.dataset.view;
-                if (view === 'list') {
-                    grid.classList.add('list-view');
-                } else {
-                    grid.classList.remove('list-view');
-                }
-            });
-        });
-    },
-    
-    initPriceRange() {
-        const slider = document.getElementById('price-range');
-        const valueDisplay = document.getElementById('price-value');
-        
-        if (!slider || !valueDisplay) return;
-        
-        slider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            valueDisplay.textContent = `₹${parseInt(value).toLocaleString()}`;
-            State.filters.priceRange = parseInt(value);
-        });
-        
-        slider.addEventListener('change', () => {
-            this.applyFiltersAndRender();
-        });
-    },
-    
-    initMobileFilters() {
-        const toggleBtn = document.getElementById('mobile-filter-toggle');
-        const sidebar = document.getElementById('filters-sidebar');
-        const applyBtn = document.getElementById('apply-filters');
-        
-        if (!toggleBtn || !sidebar) return;
-        
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.add('active');
-            document.body.classList.add('no-scroll');
-        });
-        
-        if (applyBtn) {
-            applyBtn.addEventListener('click', () => {
-                sidebar.classList.remove('active');
-                document.body.classList.remove('no-scroll');
-                this.applyFiltersAndRender();
-            });
-        }
-        
-        // Close on outside click
-        document.addEventListener('click', (e) => {
-            if (sidebar.classList.contains('active') && 
-                !sidebar.contains(e.target) && 
-                !toggleBtn.contains(e.target)) {
-                sidebar.classList.remove('active');
-                document.body.classList.remove('no-scroll');
-            }
-        });
-    },
-    
-    initSearch() {
-        const searchInput = document.getElementById('courses-search');
-        if (!searchInput) return;
-        
-        searchInput.addEventListener('input', Utils.debounce((e) => {
-            State.filters.search = e.target.value.trim();
-            this.applyFiltersAndRender();
-        }, 300));
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   15. COURSE DETAIL PAGE
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const CourseDetailPage = {
-    course: null,
-    lessons: [],
-    
-    init() {
-        this.course = State.currentCourse;
-        
-        if (!this.course) {
-            // Try to get from URL
-            const params = Utils.parseQueryString();
-            if (params.course) {
-                this.course = DemoData.courses.find(c => c.slug === params.course);
-                State.currentCourse = this.course;
-            }
-        }
-        
-        if (!this.course) {
-            Router.navigate('courses');
-            return;
-        }
-        
-        this.renderCourseDetails();
-        this.loadLessons();
-        this.loadReviews();
-        this.initTabs();
-        this.initAccordion();
-        this.initActions();
-    },
-    
-    renderCourseDetails() {
-        const c = this.course;
-        
-        // Breadcrumb
-        const breadcrumb = document.getElementById('breadcrumb-course');
-        if (breadcrumb) breadcrumb.textContent = c.title;
-        
-        // Header
-        document.getElementById('detail-category').textContent = c.category;
-        document.getElementById('detail-title').textContent = c.title;
-        document.getElementById('detail-subtitle').textContent = c.shortDescription;
-        document.getElementById('detail-rating').textContent = c.rating;
-        document.getElementById('detail-reviews').textContent = c.reviewCount.toLocaleString();
-        document.getElementById('detail-students').textContent = c.enrolledCount.toLocaleString();
-        document.getElementById('detail-updated').textContent = Utils.formatDate(c.updatedAt);
-        document.getElementById('detail-instructor-name').textContent = c.instructor;
-        document.getElementById('detail-instructor-img').src = c.instructorImage;
-        
-        // Thumbnail
-        const thumbnailContainer = document.getElementById('detail-thumbnail');
-        if (thumbnailContainer) {
-            thumbnailContainer.querySelector('img').src = c.thumbnail;
-        }
-        
-        // What you'll learn
-        const learnList = document.getElementById('detail-learn-list');
-        if (learnList && c.whatYouLearn) {
-            learnList.innerHTML = c.whatYouLearn.map(item => `
-                <li>
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    ${item}
-                </li>
-            `).join('');
-        }
-        
-        // Description
-        const description = document.getElementById('detail-description');
-        if (description) {
-            description.innerHTML = c.description;
-        }
-        
-        // Requirements
-        const requirements = document.getElementById('detail-requirements');
-        if (requirements && c.requirements) {
-            requirements.innerHTML = c.requirements.map(item => `<li>${item}</li>`).join('');
-        }
-        
-        // Target audience
-        const target = document.getElementById('detail-target');
-        if (target && c.targetAudience) {
-            target.innerHTML = c.targetAudience.map(item => `<li>${item}</li>`).join('');
-        }
-        
-        // Sidebar
-        document.getElementById('sidebar-price').textContent = Utils.formatPrice(c.price);
-        document.getElementById('sidebar-original-price').textContent = Utils.formatPrice(c.originalPrice);
-        document.getElementById('sidebar-discount').textContent = `${c.discount}% off`;
-        document.getElementById('includes-hours').textContent = c.totalDuration;
-        document.getElementById('includes-validity').textContent = c.validity === 365 ? 'Lifetime' : `${c.validity} days`;
-        
-        // Instructor tab
-        document.getElementById('instructor-photo').src = c.instructorImage;
-        document.getElementById('instructor-name').textContent = c.instructor;
-        document.getElementById('instructor-bio').innerHTML = `<p>${c.instructorBio}</p>`;
-        
-        // Reviews
-        document.getElementById('review-rating').textContent = c.rating;
-        
-        // Curriculum stats
-        document.getElementById('curriculum-lessons').textContent = c.totalLessons;
-        document.getElementById('curriculum-duration').textContent = c.totalDuration;
-    },
-    
-    async loadLessons() {
-        try {
-            const result = await API.getLessons(this.course.id);
-            if (result.success) {
-                this.lessons = result.lessons || DemoData.lessons[this.course.id] || [];
-                this.renderCurriculum();
-            }
-        } catch (error) {
-            console.error('Failed to load lessons:', error);
-            // Use demo data as fallback
-            this.lessons = DemoData.lessons[this.course.id] || [];
-            this.renderCurriculum();
-        }
-    },
-    
-    renderCurriculum() {
-        const container = document.getElementById('curriculum-list');
-        if (!container || !this.lessons.length) return;
-        
-        const isEnrolled = Auth.isEnrolled(this.course.id);
-        
-        container.innerHTML = this.lessons.map((section, sIndex) => `
-            <div class="curriculum-section ${sIndex === 0 ? 'active' : ''}">
-                <button class="section-header">
-                    <div class="section-info">
-                        <svg class="icon chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                        <span class="section-title">${section.sectionTitle}</span>
+    // Enrolled Course Card
+    enrolledCourseCard(course, enrollment) {
+        return `
+            <div class="course-card" onclick="Router.navigate('/learn/${course.id}/${course.sections?.[0]?.lessons?.[0]?.id || ''}')">
+                <div class="course-thumbnail">
+                    <div class="course-thumbnail-placeholder">${course.category === 'development' ? '💻' : '📚'}</div>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">${Utils.escapeHtml(course.title)}</h3>
+                    <div class="continue-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${enrollment.progress || 0}%"></div>
+                        </div>
+                        <span class="progress-text">${enrollment.progress || 0}% complete</span>
                     </div>
-                    <span class="section-meta">${section.lessons.length} lessons</span>
-                </button>
-                <div class="section-content" ${sIndex === 0 ? '' : 'style="display: none;"'}>
-                    ${section.lessons.map(lesson => `
-                        <div class="lesson-item ${!isEnrolled && !lesson.isFree ? 'locked' : ''}" 
-                             data-lesson-id="${lesson.id}"
-                             data-is-free="${lesson.isFree}">
-                            <div class="lesson-info">
-                                ${!isEnrolled && !lesson.isFree ? `
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                    </svg>
-                                ` : `
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <p style="font-size: var(--text-xs); color: var(--text-tertiary); margin-top: var(--space-2);">
+                        Valid until: ${Utils.formatDate(enrollment.expiresAt)}
+                    </p>
+                    <div class="course-footer">
+                        <button class="btn btn-primary btn-sm">Continue Learning</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+    
+    // Review Card
+    reviewCard(review) {
+        return `
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">${Utils.getInitials(review.userName)}</div>
+                    <div class="review-author">
+                        <h4>${Utils.escapeHtml(review.userName)}</h4>
+                        <span>${Utils.formatDate(review.date)}</span>
+                    </div>
+                    <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                </div>
+                <p class="review-text">${Utils.escapeHtml(review.text)}</p>
+            </div>
+        `;
+    },
+    
+    // Course Detail Page
+    courseDetailPage(course, isEnrolled) {
+        const discount = course.discountPrice ? Utils.calculateDiscount(course.price, course.discountPrice) : 0;
+        
+        return `
+            <!-- Course Hero -->
+            <section class="course-hero">
+                <div class="container">
+                    <div class="course-hero-content">
+                        <span class="course-badge">${Utils.escapeHtml(course.category)}</span>
+                        <h1 class="course-title">${Utils.escapeHtml(course.title)}</h1>
+                        <p class="course-subtitle">${Utils.escapeHtml(course.shortDescription)}</p>
+                        <div class="course-hero-meta">
+                            <div class="meta-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                                ${course.rating} (${course.reviewCount} reviews)
+                            </div>
+                            <div class="meta-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                ${course.enrolledCount.toLocaleString()} students
+                            </div>
+                            <div class="meta-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                ${course.totalDuration}
+                            </div>
+                            <div class="meta-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                ${course.totalLessons} lessons
+                            </div>
+                        </div>
+                        <div class="course-instructor" style="margin-top: var(--space-4);">
+                            <div class="instructor-avatar" style="width: 40px; height: 40px; font-size: var(--text-sm);">${Utils.getInitials(course.instructor)}</div>
+                            <div>
+                                <span style="font-weight: 600;">${Utils.escapeHtml(course.instructor)}</span>
+                                <span style="display: block; font-size: var(--text-xs); opacity: 0.8;">Instructor</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Purchase Card -->
+                    <div class="course-purchase-card">
+                        <div class="purchase-thumbnail">
+                            <div style="width: 100%; height: 100%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 4rem;">
+                                ${course.category === 'development' ? '💻' : course.category === 'design' ? '🎨' : '📚'}
+                            </div>
+                            <div class="play-overlay">
+                                <div class="play-btn">
+                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
                                         <polygon points="5 3 19 12 5 21 5 3"></polygon>
                                     </svg>
-                                `}
-                                <span class="lesson-title">${lesson.title}</span>
-                                ${lesson.isFree ? '<span class="lesson-badge free">Preview</span>' : ''}
+                                </div>
                             </div>
-                            <span class="lesson-duration">${lesson.duration}</span>
                         </div>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('');
-        
-        // Update section count
-        document.getElementById('curriculum-sections').textContent = this.lessons.length;
-        
-        // Re-init accordion
-        this.initAccordion();
-        
-        // Add click handlers for lessons
-        container.querySelectorAll('.lesson-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const lessonId = item.dataset.lessonId;
-                const isFree = item.dataset.isFree === 'true';
-                const isEnrolled = Auth.isEnrolled(this.course.id);
-                
-                if (isEnrolled || isFree) {
-                    this.playLesson(lessonId);
-                } else {
-                    Toast.warning('Please enroll to access this lesson');
-                }
-            });
-        });
-    },
-    
-    async loadReviews() {
-        try {
-            const result = await API.getReviews(this.course.id);
-            if (result.success) {
-                this.renderReviews(result.reviews || DemoData.reviews);
-            }
-        } catch (error) {
-            console.error('Failed to load reviews:', error);
-            this.renderReviews(DemoData.reviews.filter(r => r.courseId === this.course.id));
-        }
-    },
-    
-    renderReviews(reviews) {
-        const container = document.getElementById('reviews-list');
-        if (!container) return;
-        
-        container.innerHTML = reviews.map(review => `
-            <div class="review-item">
-                <div class="review-header">
-                    <img src="${review.userImage}" alt="${review.userName}" class="reviewer-avatar">
-                    <div class="reviewer-info">
-                        <h4 class="reviewer-name">${review.userName}</h4>
-                        <div class="review-meta">
-                            <span class="review-rating">${'⭐'.repeat(review.rating)}</span>
-                            <span class="review-date">${Utils.formatRelativeTime(review.createdAt)}</span>
+                        <div class="purchase-content">
+                            <div class="purchase-price">
+                                <span class="price-current">${Utils.formatCurrency(course.discountPrice || course.price)}</span>
+                                ${discount > 0 ? `
+                                    <span class="price-original">${Utils.formatCurrency(course.price)}</span>
+                                    <span class="discount-badge">${discount}% off</span>
+                                ` : ''}
+                            </div>
+                            <div class="purchase-buttons">
+                                ${isEnrolled ? `
+                                    <button class="btn btn-primary btn-block btn-lg" id="enrollBtn">
+                                        Continue Learning
+                                    </button>
+                                ` : `
+                                    <button class="btn btn-primary btn-block btn-lg" id="enrollBtn">
+                                        Enroll Now
+                                    </button>
+                                    <button class="btn btn-outline btn-block" id="buyNowBtn">
+                                        Buy Now
+                                    </button>
+                                `}
+                            </div>
+                            <p class="guarantee-text">30-day money-back guarantee</p>
+                            <div class="course-includes">
+                                <h4>This course includes:</h4>
+                                <div class="includes-list">
+                                    <div class="includes-item">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                        </svg>
+                                        ${course.totalDuration} of video content
+                                    </div>
+                                    <div class="includes-item">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                        </svg>
+                                        ${course.totalLessons} lessons
+                                    </div>
+                                    <div class="includes-item">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                                        </svg>
+                                        Access on all devices
+                                    </div>
+                                    <div class="includes-item">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="8" r="7"></circle>
+                                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                                        </svg>
+                                        Certificate of completion
+                                    </div>
+                                    <div class="includes-item">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        ${course.validity} days access
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <p class="review-text">${review.reviewText}</p>
-                <div class="review-actions">
-                    <button class="helpful-btn">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-                        </svg>
-                        Helpful (${review.helpful})
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    },
-    
-    initTabs() {
-        const tabBtns = document.querySelectorAll('.course-tabs .tab-btn');
-        const tabContents = document.querySelectorAll('.course-tabs .tab-content');
-        
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.dataset.tab;
-                
-                tabBtns.forEach(b => b.classList.remove('active'));
-                tabContents.forEach(c => c.classList.remove('active'));
-                
-                btn.classList.add('active');
-                document.getElementById(`tab-${tab}`)?.classList.add('active');
-            });
-        });
-    },
-    
-    initAccordion() {
-        document.querySelectorAll('.curriculum-section .section-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const section = header.parentElement;
-                const content = section.querySelector('.section-content');
-                const isActive = section.classList.contains('active');
-                
-                // Toggle
-                section.classList.toggle('active');
-                content.style.display = isActive ? 'none' : 'block';
-            });
-        });
-        
-        // Expand all button
-        const expandAllBtn = document.getElementById('expand-all');
-        if (expandAllBtn) {
-            expandAllBtn.addEventListener('click', () => {
-                const sections = document.querySelectorAll('.curriculum-section');
-                const allExpanded = Array.from(sections).every(s => s.classList.contains('active'));
-                
-                sections.forEach(section => {
-                    const content = section.querySelector('.section-content');
-                    if (allExpanded) {
-                        section.classList.remove('active');
-                        content.style.display = 'none';
-                    } else {
-                        section.classList.add('active');
-                        content.style.display = 'block';
-                    }
-                });
-                
-                expandAllBtn.textContent = allExpanded ? 'Expand All' : 'Collapse All';
-            });
-        }
-    },
-    
-    initActions() {
-        // Add to cart
-        const addToCartBtn = document.getElementById('add-to-cart-btn');
-        if (addToCartBtn) {
-            addToCartBtn.addEventListener('click', () => {
-                Cart.add(this.course.id);
-            });
-        }
-        
-        // Buy now
-        const buyNowBtn = document.getElementById('buy-now-btn');
-        if (buyNowBtn) {
-            buyNowBtn.addEventListener('click', () => {
-                Cart.add(this.course.id);
-                Router.navigate('checkout');
-            });
-        }
-        
-        // Wishlist
-        const wishlistBtn = document.getElementById('wishlist-course');
-        if (wishlistBtn) {
-            const isWishlisted = State.wishlist.includes(this.course.id);
-            if (isWishlisted) {
-                wishlistBtn.classList.add('active');
-            }
+            </section>
             
-            wishlistBtn.addEventListener('click', () => {
-                HomePage.toggleWishlist(this.course.id, wishlistBtn);
-            });
-        }
-        
-        // Share
-        const shareBtn = document.getElementById('share-course');
-        if (shareBtn) {
-            shareBtn.addEventListener('click', () => {
-                Modal.open('share-modal');
-            });
-        }
-        
-        // Preview video
-        const previewBtn = document.getElementById('preview-play-btn');
-        if (previewBtn) {
-            previewBtn.addEventListener('click', () => {
-                // Find first free lesson
-                let freeLesson = null;
-                for (const section of this.lessons) {
-                    freeLesson = section.lessons.find(l => l.isFree);
-                    if (freeLesson) break;
-                }
-                
-                if (freeLesson) {
-                    this.openVideoPreview(freeLesson.youtubeId);
-                } else {
-                    Toast.info('No preview available');
-                }
-            });
-        }
-        
-        // Coupon
-        const applyCouponBtn = document.getElementById('apply-coupon');
-        if (applyCouponBtn) {
-            applyCouponBtn.addEventListener('click', async () => {
-                const input = document.getElementById('coupon-input');
-                const code = input.value.trim();
-                
-                if (!code) {
-                    Toast.warning('Please enter a coupon code');
-                    return;
-                }
-                
-                try {
-                    const result = await API.applyCoupon(code, this.course.id);
-                    if (result.success) {
-                        Toast.success(`Coupon applied! You saved ${Utils.formatPrice(result.discount)}`);
-                    }
-                } catch (error) {
-                    Toast.error('Invalid or expired coupon code');
-                }
-            });
-        }
-        
-        // Share modal handlers
-        this.initShareModal();
+            <!-- Course Body -->
+            <section class="course-body">
+                <div class="container">
+                    <div class="course-main">
+                        <!-- Tabs -->
+                        <div class="course-tabs">
+                            <button class="tab-btn active" data-tab="overview">Overview</button>
+                            <button class="tab-btn" data-tab="curriculum">Curriculum</button>
+                            <button class="tab-btn" data-tab="instructor">Instructor</button>
+                            <button class="tab-btn" data-tab="reviews">Reviews</button>
+                        </div>
+                        
+                        <!-- Overview Tab -->
+                        <div class="tab-content active" id="overviewTab">
+                            <div class="course-description">
+                                ${course.description}
+                            </div>
+                            
+                            <h3 style="margin: var(--space-8) 0 var(--space-4); font-size: var(--text-xl);">What you'll learn</h3>
+                            <div class="learn-grid">
+                                ${(course.whatYouLearn || []).map(item => `
+                                    <div class="learn-item">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        <span>${Utils.escapeHtml(item)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <h3 style="margin: var(--space-8) 0 var(--space-4); font-size: var(--text-xl);">Requirements</h3>
+                            <ul style="list-style: disc; padding-left: var(--space-6);">
+                                ${(course.requirements || []).map(req => `
+                                    <li style="margin-bottom: var(--space-2); color: var(--text-secondary);">${Utils.escapeHtml(req)}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        
+                        <!-- Curriculum Tab -->
+                        <div class="tab-content" id="curriculumTab">
+                            <div class="curriculum-header" style="margin-bottom: var(--space-4);">
+                                <span>${course.sections?.length || 0} sections • ${course.totalLessons} lectures • ${course.totalDuration} total</span>
+                            </div>
+                            ${(course.sections || []).map(section => `
+                                <div class="curriculum-section">
+                                    <button class="section-header-accordion">
+                                        <div class="section-info">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="9 18 15 12 9 6"></polyline>
+                                            </svg>
+                                            <div>
+                                                <h4>${Utils.escapeHtml(section.title)}</h4>
+                                                <span class="section-meta">${section.lessons?.length || 0} lectures</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <div class="lessons-list">
+                                        ${(section.lessons || []).map(lesson => `
+                                            <div class="lesson-item">
+                                                <div class="lesson-info">
+                                                    ${lesson.isFree || isEnrolled ? `
+                                                        <svg class="lesson-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                                        </svg>
+                                                    ` : `
+                                                        <svg class="lesson-icon locked" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                                        </svg>
+                                                    `}
+                                                    <span class="lesson-title">${Utils.escapeHtml(lesson.title)}</span>
+                                                </div>
+                                                <div class="lesson-meta">
+                                                    ${lesson.isFree ? '<span class="preview-badge">Preview</span>' : ''}
+                                                    <span class="lesson-duration">${lesson.duration}</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- Instructor Tab -->
+                        <div class="tab-content" id="instructorTab">
+                            <div class="instructor-section">
+                                <div class="instructor-avatar-large">${Utils.getInitials(course.instructor)}</div>
+                                <div class="instructor-details">
+                                    <h3>${Utils.escapeHtml(course.instructor)}</h3>
+                                    <p class="role">Course Instructor</p>
+                                    <p class="bio">${Utils.escapeHtml(course.instructorBio || 'Expert instructor with years of industry experience.')}</p>
+                                    <div class="instructor-stats-row">
+                                        <span>⭐ ${course.rating} Rating</span>
+                                        <span>👥 ${course.enrolledCount.toLocaleString()} Students</span>
+                                        <span>🎓 5 Courses</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reviews Tab -->
+                        <div class="tab-content" id="reviewsTab">
+                            <div class="reviews-summary">
+                                <div class="rating-big">
+                                    <div class="rating-number">${course.rating}</div>
+                                    <div class="rating-stars">${'⭐'.repeat(Math.round(course.rating))}</div>
+                                    <div class="rating-count">${course.reviewCount} reviews</div>
+                                </div>
+                                <div class="rating-breakdown">
+                                    <div class="breakdown-row">
+                                        <span class="breakdown-label">5 stars</span>
+                                        <div class="breakdown-bar"><div class="breakdown-fill" style="width: 70%"></div></div>
+                                        <span class="breakdown-percent">70%</span>
+                                    </div>
+                                    <div class="breakdown-row">
+                                        <span class="breakdown-label">4 stars</span>
+                                        <div class="breakdown-bar"><div class="breakdown-fill" style="width: 20%"></div></div>
+                                        <span class="breakdown-percent">20%</span>
+                                    </div>
+                                    <div class="breakdown-row">
+                                        <span class="breakdown-label">3 stars</span>
+                                        <div class="breakdown-bar"><div class="breakdown-fill" style="width: 7%"></div></div>
+                                        <span class="breakdown-percent">7%</span>
+                                    </div>
+                                    <div class="breakdown-row">
+                                        <span class="breakdown-label">2 stars</span>
+                                        <div class="breakdown-bar"><div class="breakdown-fill" style="width: 2%"></div></div>
+                                        <span class="breakdown-percent">2%</span>
+                                    </div>
+                                    <div class="breakdown-row">
+                                        <span class="breakdown-label">1 star</span>
+                                        <div class="breakdown-bar"><div class="breakdown-fill" style="width: 1%"></div></div>
+                                        <span class="breakdown-percent">1%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="reviews-list" id="reviewsList">
+                                <!-- Reviews loaded dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `;
     },
     
-    openVideoPreview(youtubeId) {
-        const modal = document.getElementById('video-modal');
-        const iframe = document.getElementById('modal-video');
+    // Video Player Page
+    videoPlayerPage(course, lesson, section) {
+        const user = Auth.getUser();
         
-        if (modal && iframe) {
-            iframe.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`;
-            Modal.open('video-modal');
-        }
-    },
-    
-    playLesson(lessonId) {
-        State.currentLesson = lessonId;
-        Router.navigate('player');
-    },
-    
-    initShareModal() {
-        document.querySelectorAll('.share-option').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const platform = btn.dataset.share;
-                const url = window.location.href;
-                const title = this.course?.title || 'Check out this course!';
+        return `
+            <header class="player-header">
+                <a href="#/my-courses" class="back-btn" data-link>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Back
+                </a>
+                <h1 class="player-title">${Utils.escapeHtml(course.title)}</h1>
+            </header>
+            
+            <div class="player-layout">
+                <div class="player-main">
+                    <div class="video-container" id="videoContainer">
+                        <div class="video-wrapper" id="videoWrapper">
+                            <!-- Video loaded dynamically -->
+                        </div>
+                        <div class="video-watermark" id="videoWatermark">${Utils.escapeHtml(user?.email || '')}</div>
+                        <div class="security-overlay hidden" id="securityOverlay">
+                            <div class="security-message">
+                                <h3>⚠️ Screen Recording Detected</h3>
+                                <p>Video playback has been paused for security reasons.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="lesson-details">
+                        <h2 class="lesson-title-large">${Utils.escapeHtml(lesson.title)}</h2>
+                        <p class="lesson-description">${section.title} • Lesson duration: ${lesson.duration}</p>
+                        
+                        <div class="lesson-navigation">
+                            <button class="btn btn-outline" id="prevLessonBtn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                                </svg>
+                                Previous
+                            </button>
+                            <button class="btn btn-primary" id="markCompleteBtn">
+                                Mark as Complete
+                            </button>
+                            <button class="btn btn-outline" id="nextLessonBtn">
+                                Next
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 
-                let shareUrl = '';
-                
-                switch (platform) {
-                    case 'whatsapp':
-                        shareUrl = `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`;
-                        break;
-                    case 'twitter':
-                        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
-                        break;
-                    case 'facebook':
-                        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-                        break;
-                    case 'linkedin':
-                        shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`;
-                        break;
-                    case 'copy':
-                        Utils.copyToClipboard(url);
-                        Toast.success('Link copied to clipboard!');
-                        Modal.close('share-modal');
-                        return;
-                }
-                
-                if (shareUrl) {
-                    window.open(shareUrl, '_blank', 'width=600,height=400');
-                    Modal.close('share-modal');
-                }
-            });
-        });
+                <aside class="lessons-sidebar">
+                    <div class="sidebar-header-player">
+                        <h3>Course Content</h3>
+                        <div class="course-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 25%"></div>
+                            </div>
+                            <span>25%</span>
+                        </div>
+                    </div>
+                    <div class="lessons-list-player">
+                        ${(course.sections || []).map(sec => `
+                            <div class="section-title-player">${Utils.escapeHtml(sec.title)}</div>
+                            ${(sec.lessons || []).map(les => `
+                                <div class="lesson-item-player ${les.id === lesson.id ? 'active' : ''}" data-lesson-id="${les.id}">
+                                    <div class="lesson-status">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                        </svg>
+                                    </div>
+                                    <span class="lesson-title-sm">${Utils.escapeHtml(les.title)}</span>
+                                    <span class="lesson-duration-sm">${les.duration}</span>
+                                </div>
+                            `).join('')}
+                        `).join('')}
+                    </div>
+                </aside>
+            </div>
+        `;
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   16. VIDEO PLAYER PAGE
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// VIDEO PLAYER
+// ═══════════════════════════════════════════════════════════════════════════════
 
-const PlayerPage = {
-    course: null,
-    lessons: [],
-    currentLessonIndex: 0,
-    currentSectionIndex: 0,
+const VideoPlayer = {
+    currentCourse: null,
+    currentLesson: null,
     player: null,
-    watermarkInterval: null,
-    devToolsOpen: false,
+    tokenExpiry: null,
     
-    init() {
-        this.course = State.currentCourse;
+    async init(course, lesson) {
+        this.currentCourse = course;
+        this.currentLesson = lesson;
         
-        if (!this.course) {
-            Router.navigate('courses');
+        // Get video token
+        const tokenResult = await API.getVideoToken(lesson.id, course.id);
+        
+        if (!tokenResult.success) {
+            Toast.error('Error', 'Failed to load video');
             return;
         }
         
-        // Check enrollment
-        if (!Auth.isEnrolled(this.course.id) && !CONFIG.DEMO_MODE) {
-            Toast.warning('Please enroll to access this course');
-            Router.navigate('course-detail', { courseSlug: this.course.slug });
-            return;
+        this.tokenExpiry = tokenResult.data.expiresAt;
+        
+        // Load YouTube iframe
+        const wrapper = document.getElementById('videoWrapper');
+        if (wrapper) {
+            // In demo mode, use a placeholder
+            const youtubeId = tokenResult.data.youtubeId || 'dQw4w9WgXcQ';
+            wrapper.innerHTML = `
+                <iframe 
+                    src="https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&rel=0&modestbranding=1"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
+            `;
         }
         
-        this.lessons = DemoData.lessons[this.course.id] || [];
-        
-        this.renderHeader();
-        this.renderLessonsSidebar();
-        this.loadCurrentLesson();
-        this.initControls();
+        // Initialize security features
         this.initSecurity();
-        this.initWatermark();
-    },
-    
-    renderHeader() {
-        document.getElementById('player-course-title').textContent = this.course.title;
         
-        // Update progress
-        const progress = this.calculateProgress();
-        document.getElementById('course-progress-fill').style.width = `${progress}%`;
-        document.getElementById('course-progress-text').textContent = `${progress}% complete`;
-    },
-    
-    calculateProgress() {
-        // In real app, calculate from completed lessons
-        return 25; // Demo value
-    },
-    
-    renderLessonsSidebar() {
-        const container = document.getElementById('lessons-sidebar');
-        if (!container) return;
-        
-        container.innerHTML = this.lessons.map((section, sIndex) => `
-            <div class="sidebar-section ${sIndex === this.currentSectionIndex ? 'active' : ''}">
-                <div class="sidebar-section-header">
-                    <span class="sidebar-section-title">${section.sectionTitle}</span>
-                    <span class="sidebar-section-meta">${section.lessons.length} lessons</span>
-                </div>
-                <div class="sidebar-lessons">
-                    ${section.lessons.map((lesson, lIndex) => `
-                        <div class="sidebar-lesson ${this.isCurrentLesson(sIndex, lIndex) ? 'active' : ''}"
-                             data-section="${sIndex}" data-lesson="${lIndex}">
-                            <div class="lesson-status">
-                                ${this.isLessonCompleted(lesson.id) ? '✓' : '○'}
-                            </div>
-                            <div class="lesson-info">
-                                <span class="lesson-title">${lesson.title}</span>
-                                <span class="lesson-duration">${lesson.duration}</span>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('');
-        
-        // Add click handlers
-        container.querySelectorAll('.sidebar-section-header').forEach(header => {
-            header.addEventListener('click', () => {
-                header.parentElement.classList.toggle('active');
-            });
-        });
-        
-        container.querySelectorAll('.sidebar-lesson').forEach(item => {
-            item.addEventListener('click', () => {
-                const sectionIndex = parseInt(item.dataset.section);
-                const lessonIndex = parseInt(item.dataset.lesson);
-                this.goToLesson(sectionIndex, lessonIndex);
-            });
-        });
-    },
-    
-    isCurrentLesson(sectionIndex, lessonIndex) {
-        return sectionIndex === this.currentSectionIndex && lessonIndex === this.currentLessonIndex;
-    },
-    
-    isLessonCompleted(lessonId) {
-        // In real app, check from State.enrollments
-        return false;
-    },
-    
-    async loadCurrentLesson() {
-        const section = this.lessons[this.currentSectionIndex];
-        if (!section) return;
-        
-        const lesson = section.lessons[this.currentLessonIndex];
-        if (!lesson) return;
-        
-        // Update UI
-        document.getElementById('current-lesson-title').textContent = lesson.title;
-        document.getElementById('lesson-title').textContent = lesson.title;
-        document.getElementById('lesson-description').textContent = `Part of ${section.sectionTitle}`;
-        
-        // Show loading
-        document.getElementById('video-loading').style.display = 'flex';
-        
-        try {
-            // Get video token
-            const result = await API.getVideoToken(lesson.id, this.course.id);
-            
-            if (result.success) {
-                this.loadVideo(result.youtubeId || lesson.youtubeId);
-            }
-        } catch (error) {
-            console.error('Failed to load video:', error);
-            // Use demo video
-            this.loadVideo(lesson.youtubeId);
-        }
-        
-        // Update sidebar
-        this.updateSidebarActive();
-    },
-    
-    loadVideo(youtubeId) {
-        const iframe = document.getElementById('youtube-player');
-        const loading = document.getElementById('video-loading');
-        
-        // Construct YouTube URL with parameters to limit functionality
-        const params = new URLSearchParams({
-            autoplay: 1,
-            modestbranding: 1,
-            rel: 0,
-            showinfo: 0,
-            controls: 1,
-            disablekb: 0,
-            fs: 1,
-            iv_load_policy: 3,
-            playsinline: 1
-        });
-        
-        iframe.src = `https://www.youtube.com/embed/${youtubeId}?${params.toString()}`;
-        
-        iframe.onload = () => {
-            loading.style.display = 'none';
-        };
-    },
-    
-    updateSidebarActive() {
-        document.querySelectorAll('.sidebar-lesson').forEach(item => {
-            const sectionIndex = parseInt(item.dataset.section);
-            const lessonIndex = parseInt(item.dataset.lesson);
-            
-            item.classList.toggle('active', this.isCurrentLesson(sectionIndex, lessonIndex));
-        });
-    },
-    
-    goToLesson(sectionIndex, lessonIndex) {
-        this.currentSectionIndex = sectionIndex;
-        this.currentLessonIndex = lessonIndex;
-        this.loadCurrentLesson();
-    },
-    
-    nextLesson() {
-        const section = this.lessons[this.currentSectionIndex];
-        
-        if (this.currentLessonIndex < section.lessons.length - 1) {
-            this.currentLessonIndex++;
-        } else if (this.currentSectionIndex < this.lessons.length - 1) {
-            this.currentSectionIndex++;
-            this.currentLessonIndex = 0;
-        } else {
-            Toast.success('Congratulations! You completed the course!');
-            return;
-        }
-        
-        this.loadCurrentLesson();
-    },
-    
-    prevLesson() {
-        if (this.currentLessonIndex > 0) {
-            this.currentLessonIndex--;
-        } else if (this.currentSectionIndex > 0) {
-            this.currentSectionIndex--;
-            const section = this.lessons[this.currentSectionIndex];
-            this.currentLessonIndex = section.lessons.length - 1;
-        } else {
-            Toast.info('This is the first lesson');
-            return;
-        }
-        
-        this.loadCurrentLesson();
-    },
-    
-    initControls() {
-        // Back button
-        const backBtn = document.getElementById('player-back-btn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => {
-                Router.navigate('course-detail', { courseSlug: this.course.slug });
-            });
-        }
-        
-        // Previous/Next buttons
-        const prevBtn = document.getElementById('prev-lesson-btn');
-        const nextBtn = document.getElementById('next-lesson-btn');
-        
-        if (prevBtn) prevBtn.addEventListener('click', () => this.prevLesson());
-        if (nextBtn) nextBtn.addEventListener('click', () => this.nextLesson());
-        
-        // Speed control
-        const speedBtn = document.getElementById('speed-btn');
-        const speedMenu = document.getElementById('speed-menu');
-        
-        if (speedMenu) {
-            speedMenu.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const speed = btn.dataset.speed;
-                    speedBtn.textContent = `${speed}x`;
-                    
-                    speedMenu.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    // Note: Can't change YouTube iframe speed directly
-                    // Would need YouTube IFrame API for this
-                });
-            });
-        }
-        
-        // Mark complete
-        const markCompleteBtn = document.getElementById('mark-complete-btn');
-        if (markCompleteBtn) {
-            markCompleteBtn.addEventListener('click', async () => {
-                const section = this.lessons[this.currentSectionIndex];
-                const lesson = section?.lessons[this.currentLessonIndex];
-                
-                if (lesson) {
-                    try {
-                        await API.markLessonComplete(lesson.id, this.course.id);
-                        markCompleteBtn.classList.add('completed');
-                        markCompleteBtn.innerHTML = `
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            Completed
-                        `;
-                        Toast.success('Lesson marked as complete');
-                        
-                        // Auto go to next lesson after 2 seconds
-                        setTimeout(() => this.nextLesson(), 2000);
-                    } catch (error) {
-                        Toast.error('Failed to mark as complete');
-                    }
-                }
-            });
-        }
-        
-        // Notes
-        const saveNotesBtn = document.getElementById('save-notes-btn');
-        if (saveNotesBtn) {
-            saveNotesBtn.addEventListener('click', () => {
-                const notes = document.getElementById('lesson-notes').value;
-                // Save notes to localStorage or server
-                const key = `notes_${this.course.id}_${this.currentSectionIndex}_${this.currentLessonIndex}`;
-                localStorage.setItem(key, notes);
-                Toast.success('Notes saved');
-            });
-        }
-        
-        // Video tabs
-        document.querySelectorAll('.video-tabs .tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.dataset.tab;
-                
-                document.querySelectorAll('.video-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.video-tab-content').forEach(c => c.classList.remove('active'));
-                
-                btn.classList.add('active');
-                document.getElementById(`${tab}-tab`)?.classList.add('active');
-            });
-        });
-        
-        // Mobile sidebar toggle
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const playerSidebar = document.getElementById('player-sidebar');
-        
-        if (sidebarToggle && playerSidebar) {
-            sidebarToggle.addEventListener('click', () => {
-                playerSidebar.classList.remove('active');
-            });
-        }
+        // Setup navigation
+        this.setupNavigation();
     },
     
     initSecurity() {
         // Disable right-click
         document.addEventListener('contextmenu', (e) => {
-            if (State.currentPage === 'player') {
+            const container = document.getElementById('videoContainer');
+            if (container?.contains(e.target)) {
                 e.preventDefault();
-                Toast.warning('Right-click is disabled for security');
             }
         });
         
@@ -3175,918 +2644,454 @@ const PlayerPage = {
             const heightThreshold = window.outerHeight - window.innerHeight > threshold;
             
             if (widthThreshold || heightThreshold) {
-                if (!this.devToolsOpen) {
-                    this.devToolsOpen = true;
-                    this.showSecurityOverlay();
-                }
+                document.getElementById('securityOverlay')?.classList.remove('hidden');
             } else {
-                if (this.devToolsOpen) {
-                    this.devToolsOpen = false;
-                    this.hideSecurityOverlay();
-                }
+                document.getElementById('securityOverlay')?.classList.add('hidden');
             }
         };
         
-        // Check periodically
+        window.addEventListener('resize', detectDevTools);
         setInterval(detectDevTools, 1000);
         
         // Disable keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            if (State.currentPage !== 'player') return;
-            
-            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-            if (e.key === 'F12' || 
+            // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (
+                e.key === 'F12' ||
                 (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
-                (e.ctrlKey && e.key === 'u')) {
+                (e.ctrlKey && e.key === 'u')
+            ) {
                 e.preventDefault();
-                Toast.warning('This action is disabled for security');
+            }
+        });
+        
+        // Token refresh
+        setInterval(() => {
+            if (this.tokenExpiry && Date.now() > this.tokenExpiry) {
+                // Token expired, refresh
+                this.init(this.currentCourse, this.currentLesson);
+            }
+        }, 60000);
+    },
+    
+    setupNavigation() {
+        // Mark complete button
+        document.getElementById('markCompleteBtn')?.addEventListener('click', () => {
+            Toast.success('Lesson Completed', 'Great job! Keep going!');
+        });
+        
+        // Next/Previous buttons
+        document.getElementById('nextLessonBtn')?.addEventListener('click', () => {
+            const nextLesson = this.getAdjacentLesson(1);
+            if (nextLesson) {
+                Router.navigate(`/learn/${this.currentCourse.id}/${nextLesson.id}`);
+            } else {
+                Toast.info('Course Complete', 'You\'ve reached the end of this course!');
+            }
+        });
+        
+        document.getElementById('prevLessonBtn')?.addEventListener('click', () => {
+            const prevLesson = this.getAdjacentLesson(-1);
+            if (prevLesson) {
+                Router.navigate(`/learn/${this.currentCourse.id}/${prevLesson.id}`);
             }
         });
     },
     
-    showSecurityOverlay() {
-        const overlay = document.getElementById('security-overlay');
-        if (overlay) overlay.style.display = 'flex';
-        
-        // Pause video by removing iframe src
-        const iframe = document.getElementById('youtube-player');
-        if (iframe) {
-            this.pausedVideoSrc = iframe.src;
-            iframe.src = '';
+    getAdjacentLesson(offset) {
+        const allLessons = [];
+        for (const section of this.currentCourse.sections || []) {
+            for (const lesson of section.lessons || []) {
+                allLessons.push(lesson);
+            }
         }
-    },
-    
-    hideSecurityOverlay() {
-        const overlay = document.getElementById('security-overlay');
-        if (overlay) overlay.style.display = 'none';
         
-        // Resume video
-        const iframe = document.getElementById('youtube-player');
-        if (iframe && this.pausedVideoSrc) {
-            iframe.src = this.pausedVideoSrc;
+        const currentIndex = allLessons.findIndex(l => l.id === this.currentLesson.id);
+        const newIndex = currentIndex + offset;
+        
+        if (newIndex >= 0 && newIndex < allLessons.length) {
+            return allLessons[newIndex];
         }
-    },
-    
-    initWatermark() {
-        const watermark = document.getElementById('video-watermark');
-        if (!watermark || !State.user) return;
-        
-        watermark.querySelector('span').textContent = State.user.email;
-        
-        // Move watermark periodically
-        const moveWatermark = () => {
-            const positions = [
-                { top: '10%', left: '10%' },
-                { top: '10%', left: '70%' },
-                { top: '80%', left: '70%' },
-                { top: '80%', left: '10%' },
-                { top: '50%', left: '40%' }
-            ];
-            
-            const pos = positions[Math.floor(Math.random() * positions.length)];
-            watermark.style.top = pos.top;
-            watermark.style.left = pos.left;
-        };
-        
-        this.watermarkInterval = setInterval(moveWatermark, CONFIG.WATERMARK_INTERVAL);
-    },
-    
-    cleanup() {
-        if (this.watermarkInterval) {
-            clearInterval(this.watermarkInterval);
-        }
+        return null;
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   17. DASHBOARD PAGE
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// WISHLIST
+// ═══════════════════════════════════════════════════════════════════════════════
 
-const DashboardPage = {
-    init() {
-        if (!State.isAuthenticated) {
-            Router.navigate('login');
-            return;
-        }
-        
-        this.renderWelcome();
-        this.renderStats();
-        this.initSidebar();
-        this.initSections();
-        this.loadEnrolledCourses();
-        this.loadRecommended();
+const Wishlist = {
+    getItems() {
+        return Storage.get(CONFIG.STORAGE_KEYS.WISHLIST) || [];
     },
     
-    renderWelcome() {
-        const welcomeName = document.getElementById('welcome-name');
-        if (welcomeName && State.user) {
-            welcomeName.textContent = State.user.name.split(' ')[0];
-        }
-        
-        // Update avatar
-        const avatar = document.getElementById('dashboard-avatar');
-        if (avatar && State.user) {
-            avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(State.user.name)}&background=6366f1&color=fff`;
-        }
-    },
-    
-    renderStats() {
-        // In real app, fetch from API
-        document.getElementById('enrolled-count').textContent = State.enrollments.length || 3;
-        document.getElementById('completed-count').textContent = 1;
-        document.getElementById('certificate-count').textContent = 1;
-        document.getElementById('hours-watched').textContent = 24;
-    },
-    
-    initSidebar() {
-        // Mobile sidebar toggle
-        const mobileToggle = document.getElementById('mobile-sidebar-toggle');
-        const sidebar = document.getElementById('dashboard-sidebar');
-        
-        if (mobileToggle && sidebar) {
-            mobileToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
-            });
-        }
-        
-        // Sidebar links
-        document.querySelectorAll('.dashboard-sidebar .sidebar-link[data-section]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const section = link.dataset.section;
-                this.showSection(section);
-                
-                // Update active link
-                document.querySelectorAll('.dashboard-sidebar .sidebar-link').forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                
-                // Close mobile sidebar
-                if (sidebar) sidebar.classList.remove('active');
-            });
-        });
-        
-        // Logout
-        const logoutBtn = document.getElementById('dashboard-logout');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => Auth.logout());
-        }
-    },
-    
-    showSection(sectionId) {
-        document.querySelectorAll('.dashboard-section').forEach(section => {
-            section.classList.remove('active');
-        });
-        
-        const section = document.getElementById(`section-${sectionId}`);
-        if (section) {
-            section.classList.add('active');
-            
-            // Load section content
-            switch (sectionId) {
-                case 'my-courses':
-                    this.loadMyCourses();
-                    break;
-                case 'wishlist':
-                    this.loadWishlist();
-                    break;
-                case 'certificates':
-                    this.loadCertificates();
-                    break;
-                case 'settings':
-                    this.loadSettings();
-                    break;
-            }
-        }
-    },
-    
-    initSections() {
-        // Continue learning section navigation
-        document.querySelectorAll('[data-section]').forEach(el => {
-            el.addEventListener('click', (e) => {
-                if (el.classList.contains('view-all')) {
-                    e.preventDefault();
-                    const section = el.dataset.section;
-                    this.showSection(section);
-                    
-                    // Update sidebar
-                    document.querySelectorAll('.dashboard-sidebar .sidebar-link').forEach(l => {
-                        l.classList.toggle('active', l.dataset.section === section);
-                    });
-                }
-            });
-        });
-        
-        // Course filter buttons
-        document.querySelectorAll('.courses-filter .filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.courses-filter .filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                const filter = btn.dataset.filter;
-                this.filterMyCourses(filter);
-            });
-        });
-    },
-    
-    loadEnrolledCourses() {
-        const grid = document.getElementById('continue-learning-grid');
-        const emptyState = document.getElementById('no-courses-enrolled');
-        
-        if (!grid) return;
-        
-        // Demo: Show some courses as enrolled
-        const enrolledCourses = DemoData.courses.slice(0, 3);
-        
-        if (enrolledCourses.length === 0) {
-            grid.innerHTML = '';
-            if (emptyState) emptyState.style.display = 'block';
-            return;
-        }
-        
-        if (emptyState) emptyState.style.display = 'none';
-        
-        grid.innerHTML = enrolledCourses.map((course, index) => {
-            const progress = [25, 60, 100][index] || 0;
-            
-            return `
-                <div class="continue-card" data-course-id="${course.id}">
-                    <img src="${course.thumbnail}" alt="${course.title}" class="card-thumb">
-                    <div class="card-content">
-                        <h4 class="card-title">${course.title}</h4>
-                        <div class="progress-info">
-                            <span>${progress}% complete</span>
-                            <span>${course.totalLessons} lessons</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${progress}%"></div>
-                        </div>
-                        <button class="btn btn-primary btn-sm">${progress === 100 ? 'Review' : 'Continue'}</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        
-        // Add click handlers
-        grid.querySelectorAll('.continue-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const courseId = card.dataset.courseId;
-                const course = DemoData.courses.find(c => c.id === courseId);
-                if (course) {
-                    State.currentCourse = course;
-                    Router.navigate('player');
-                }
-            });
-        });
-    },
-    
-    loadRecommended() {
-        const grid = document.getElementById('recommended-grid');
-        if (!grid) return;
-        
-        // Show courses user hasn't enrolled in
-        const recommended = DemoData.courses.slice(3, 6);
-        
-        grid.innerHTML = recommended.map(course => HomePage.createCourseCard(course)).join('');
-        
-        // Add event listeners
-        grid.querySelectorAll('.course-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                if (!e.target.closest('.wishlist-icon') && !e.target.closest('.enroll-btn')) {
-                    const courseId = card.dataset.courseId;
-                    const course = DemoData.courses.find(c => c.id === courseId);
-                    if (course) {
-                        State.currentCourse = course;
-                        Router.navigate('course-detail', { courseSlug: course.slug });
-                    }
-                }
-            });
-        });
-    },
-    
-    loadMyCourses() {
-        const grid = document.getElementById('my-courses-grid');
-        if (!grid) return;
-        
-        // Demo enrolled courses
-        const enrolledCourses = DemoData.courses.slice(0, 4);
-        
-        grid.innerHTML = enrolledCourses.map((course, index) => {
-            const progress = [25, 60, 100, 45][index] || 0;
-            
-            return `
-                <div class="course-card enrolled" data-course-id="${course.id}" data-progress="${progress}">
-                    <div class="card-image">
-                        <img src="${course.thumbnail}" alt="${course.title}">
-                        <div class="card-overlay">
-                            <span class="play-icon">▶</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title">${course.title}</h3>
-                        <div class="progress-info" style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
-                            <span>${progress}% complete</span>
-                        </div>
-                        <div class="progress-bar" style="height: 6px; background: var(--gray-200); border-radius: 999px; overflow: hidden; margin-bottom: 1rem;">
-                            <div class="progress-fill" style="width: ${progress}%; height: 100%; background: var(--primary-600); border-radius: 999px;"></div>
-                        </div>
-                        <button class="btn btn-primary btn-block btn-sm">${progress === 100 ? 'View Certificate' : 'Continue Learning'}</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        
-        // Add click handlers
-        grid.querySelectorAll('.course-card').forEach(card => {
-            card.querySelector('.btn').addEventListener('click', () => {
-                const courseId = card.dataset.courseId;
-                const progress = parseInt(card.dataset.progress);
-                const course = DemoData.courses.find(c => c.id === courseId);
-                
-                if (course) {
-                    State.currentCourse = course;
-                    if (progress === 100) {
-                        this.showSection('certificates');
-                    } else {
-                        Router.navigate('player');
-                    }
-                }
-            });
-        });
-    },
-    
-    filterMyCourses(filter) {
-        const cards = document.querySelectorAll('#my-courses-grid .course-card');
-        
-        cards.forEach(card => {
-            const progress = parseInt(card.dataset.progress);
-            let show = true;
-            
-            if (filter === 'in-progress') {
-                show = progress > 0 && progress < 100;
-            } else if (filter === 'completed') {
-                show = progress === 100;
-            }
-            
-            card.style.display = show ? '' : 'none';
-        });
-    },
-    
-    loadWishlist() {
-        const grid = document.getElementById('wishlist-grid');
-        if (!grid) return;
-        
-        const wishlistCourses = DemoData.courses.filter(c => State.wishlist.includes(c.id));
-        
-        if (wishlistCourses.length === 0) {
-            grid.innerHTML = `
-                <div class="empty-state" style="grid-column: 1 / -1;">
-                    <div class="empty-icon">❤️</div>
-                    <h3>Your wishlist is empty</h3>
-                    <p>Save courses you're interested in for later</p>
-                    <button class="btn btn-primary" data-page="courses">Browse Courses</button>
-                </div>
-            `;
-            return;
-        }
-        
-        grid.innerHTML = wishlistCourses.map(course => HomePage.createCourseCard(course)).join('');
-    },
-    
-    loadCertificates() {
-        const grid = document.getElementById('certificates-grid');
-        if (!grid) return;
-        
-        // Demo certificate
-        const completedCourses = [DemoData.courses[0]];
-        
-        if (completedCourses.length === 0) {
-            grid.innerHTML = `
-                <div class="empty-state" style="grid-column: 1 / -1;">
-                    <div class="empty-icon">🎓</div>
-                    <h3>No certificates yet</h3>
-                    <p>Complete a course to earn your first certificate</p>
-                    <button class="btn btn-primary" data-page="courses">Browse Courses</button>
-                </div>
-            `;
-            return;
-        }
-        
-        grid.innerHTML = completedCourses.map(course => `
-            <div class="certificate-card">
-                <div class="certificate-preview">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="7"></circle>
-                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                    </svg>
-                </div>
-                <h4>${course.title}</h4>
-                <p>Completed on ${Utils.formatDate(new Date().toISOString())}</p>
-                <button class="btn btn-primary btn-block">Download Certificate</button>
-            </div>
-        `).join('');
-    },
-    
-    loadSettings() {
-        if (!State.user) return;
-        
-        // Populate form fields
-        document.getElementById('settings-name').value = State.user.name || '';
-        document.getElementById('settings-email').value = State.user.email || '';
-        document.getElementById('settings-phone').value = State.user.phone || '';
-        
-        // Profile form
-        const profileForm = document.getElementById('profile-form');
-        if (profileForm) {
-            profileForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                State.user.name = document.getElementById('settings-name').value;
-                State.user.phone = document.getElementById('settings-phone').value;
-                State.saveUser();
-                
-                Toast.success('Profile updated successfully');
-                UI.updateAuthUI();
-            });
-        }
-        
-        // Password form
-        const passwordForm = document.getElementById('password-form');
-        if (passwordForm) {
-            passwordForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const current = document.getElementById('current-password').value;
-                const newPass = document.getElementById('new-password').value;
-                const confirm = document.getElementById('confirm-password').value;
-                
-                if (newPass !== confirm) {
-                    Toast.error('New passwords do not match');
-                    return;
-                }
-                
-                if (newPass.length < 8) {
-                    Toast.error('Password must be at least 8 characters');
-                    return;
-                }
-                
-                // In real app, call API
-                Toast.success('Password updated successfully');
-                passwordForm.reset();
-            });
-        }
-        
-        // Delete account
-        const deleteBtn = document.getElementById('delete-account-btn');
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', () => {
-                Modal.confirm(
-                    'Delete Account',
-                    'Are you sure you want to delete your account? This action cannot be undone.',
-                    () => {
-                        // In real app, call API
-                        Auth.logout();
-                        Toast.info('Account deleted');
-                    }
-                );
-            });
-        }
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   18. CART & CHECKOUT
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-const Cart = {
     add(courseId) {
-        if (!State.isAuthenticated) {
-            Toast.warning('Please login to add courses to cart');
-            Router.navigate('login');
-            return;
+        const items = this.getItems();
+        if (!items.includes(courseId)) {
+            items.push(courseId);
+            Storage.set(CONFIG.STORAGE_KEYS.WISHLIST, items);
+            Toast.success('Added to Wishlist', 'Course added to your wishlist');
         }
-        
-        // Check if already enrolled
-        if (Auth.isEnrolled(courseId)) {
-            Toast.info('You are already enrolled in this course');
-            return;
-        }
-        
-        // Check if already in cart
-        if (State.cart.includes(courseId)) {
-            Toast.info('Course already in cart');
-            return;
-        }
-        
-        State.cart.push(courseId);
-        State.saveCart();
-        UI.updateCartCount();
-        
-        Toast.success('Course added to cart');
     },
     
     remove(courseId) {
-        const index = State.cart.indexOf(courseId);
-        if (index > -1) {
-            State.cart.splice(index, 1);
-            State.saveCart();
-            UI.updateCartCount();
+        let items = this.getItems();
+        items = items.filter(id => id !== courseId);
+        Storage.set(CONFIG.STORAGE_KEYS.WISHLIST, items);
+        Toast.success('Removed from Wishlist', 'Course removed from your wishlist');
+    },
+    
+    toggle(courseId) {
+        if (this.getItems().includes(courseId)) {
+            this.remove(courseId);
+        } else {
+            this.add(courseId);
         }
     },
     
-    clear() {
-        State.cart = [];
-        State.saveCart();
-        UI.updateCartCount();
-    },
-    
-    getTotal() {
-        return State.cart.reduce((total, courseId) => {
-            const course = DemoData.courses.find(c => c.id === courseId);
-            return total + (course ? course.price : 0);
-        }, 0);
-    },
-    
-    getItems() {
-        return State.cart.map(courseId => DemoData.courses.find(c => c.id === courseId)).filter(Boolean);
+    isInWishlist(courseId) {
+        return this.getItems().includes(courseId);
     }
 };
 
-const CheckoutPage = {
-    couponDiscount: 0,
-    
-    init() {
-        if (!State.isAuthenticated) {
-            Router.navigate('login');
-            return;
-        }
+// ═══════════════════════════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const UI = {
+    // Initialize theme
+    initTheme() {
+        const savedTheme = Storage.get(CONFIG.STORAGE_KEYS.THEME);
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = savedTheme || (prefersDark ? 'dark' : 'light');
         
-        if (State.cart.length === 0) {
-            Toast.warning('Your cart is empty');
-            Router.navigate('courses');
-            return;
-        }
-        
-        this.renderCartItems();
-        this.updateTotals();
-        this.initCoupon();
-        this.initPayment();
+        document.documentElement.setAttribute('data-theme', theme);
     },
     
-    renderCartItems() {
-        const container = document.getElementById('cart-items');
-        if (!container) return;
+    // Toggle theme
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         
-        const items = Cart.getItems();
-        
-        container.innerHTML = items.map(course => `
-            <div class="cart-item" data-course-id="${course.id}">
-                <img src="${course.thumbnail}" alt="${course.title}" class="item-image">
-                <div class="item-info">
-                    <h4 class="item-title">${course.title}</h4>
-                    <p class="item-instructor">by ${course.instructor}</p>
-                    <div>
-                        <span class="item-price">${Utils.formatPrice(course.price)}</span>
-                        <span style="text-decoration: line-through; color: var(--text-tertiary); margin-left: 0.5rem; font-size: 0.875rem;">
-                            ${Utils.formatPrice(course.originalPrice)}
-                        </span>
-                    </div>
-                </div>
-                <button class="item-remove" aria-label="Remove">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
-                        <path d="M18 6L6 18M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        `).join('');
-        
-        // Remove handlers
-        container.querySelectorAll('.item-remove').forEach(btn => {
+        document.documentElement.setAttribute('data-theme', newTheme);
+        Storage.set(CONFIG.STORAGE_KEYS.THEME, newTheme);
+    },
+    
+    // Initialize password toggles
+    initPasswordToggles() {
+        document.querySelectorAll('.toggle-password').forEach(btn => {
             btn.addEventListener('click', () => {
-                const courseId = btn.closest('.cart-item').dataset.courseId;
-                Cart.remove(courseId);
-                this.renderCartItems();
-                this.updateTotals();
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
                 
-                if (State.cart.length === 0) {
-                    Router.navigate('courses');
+                if (input) {
+                    const isPassword = input.type === 'password';
+                    input.type = isPassword ? 'text' : 'password';
+                    
+                    btn.querySelector('.eye-open').classList.toggle('hidden', !isPassword);
+                    btn.querySelector('.eye-closed').classList.toggle('hidden', isPassword);
                 }
             });
         });
     },
     
-    updateTotals() {
-        const subtotal = Cart.getTotal();
-        const discount = this.couponDiscount;
-        const total = subtotal - discount;
-        
-        document.getElementById('checkout-subtotal').textContent = Utils.formatPrice(subtotal);
-        document.getElementById('checkout-total').textContent = Utils.formatPrice(total);
-        
-        const discountRow = document.getElementById('discount-row');
-        if (discount > 0 && discountRow) {
-            discountRow.style.display = 'flex';
-            document.getElementById('checkout-discount').textContent = `-${Utils.formatPrice(discount)}`;
-        } else if (discountRow) {
-            discountRow.style.display = 'none';
-        }
-    },
-    
-    initCoupon() {
-        const applyBtn = document.getElementById('apply-checkout-coupon');
-        const input = document.getElementById('checkout-coupon');
-        const message = document.getElementById('coupon-message');
-        
-        if (!applyBtn || !input) return;
-        
-        applyBtn.addEventListener('click', async () => {
-            const code = input.value.trim().toUpperCase();
-            
-            if (!code) {
-                Toast.warning('Please enter a coupon code');
-                return;
-            }
-            
-            // Demo coupons
-            const coupons = {
-                'LEARN20': 20,
-                'SAVE50': 50,
-                'NEWUSER': 30
-            };
-            
-            if (coupons[code]) {
-                const subtotal = Cart.getTotal();
-                this.couponDiscount = Math.round(subtotal * (coupons[code] / 100));
+    // Initialize tabs
+    initTabs() {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
                 
-                message.textContent = `Coupon applied! ${coupons[code]}% off`;
-                message.className = 'coupon-message success';
+                // Update buttons
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 
-                this.updateTotals();
-                Toast.success(`Coupon applied! You saved ${Utils.formatPrice(this.couponDiscount)}`);
-            } else {
-                message.textContent = 'Invalid or expired coupon code';
-                message.className = 'coupon-message error';
-                Toast.error('Invalid coupon code');
-            }
-        });
-    },
-    
-    initPayment() {
-        const payBtn = document.getElementById('pay-now-btn');
-        if (!payBtn) return;
-        
-        payBtn.addEventListener('click', async () => {
-            Loading.buttonStart(payBtn);
-            
-            try {
-                const total = Cart.getTotal() - this.couponDiscount;
-                
-                if (CONFIG.DEMO_MODE) {
-                    // Simulate payment in demo mode
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    this.onPaymentSuccess({
-                        orderId: Utils.generateId('order'),
-                        amount: total
-                    });
-                    return;
-                }
-                
-                // Create order
-                const orderResult = await API.createOrder(State.cart[0], null);
-                
-                if (!orderResult.success) {
-                    throw new Error('Failed to create order');
-                }
-                
-                // Open Razorpay
-                const options = {
-                    key: CONFIG.RAZORPAY_KEY,
-                    amount: total * 100, // in paise
-                    currency: CONFIG.CURRENCY,
-                    name: CONFIG.APP_NAME,
-                    description: `Purchase of ${State.cart.length} course(s)`,
-                    order_id: orderResult.razorpayOrderId,
-                    handler: async (response) => {
-                        await this.verifyPayment(response, orderResult.orderId);
-                    },
-                    prefill: {
-                        name: State.user.name,
-                        email: State.user.email,
-                        contact: State.user.phone
-                    },
-                    theme: {
-                        color: '#6366f1'
-                    },
-                    modal: {
-                        ondismiss: () => {
-                            Loading.buttonStop(payBtn);
-                            Toast.info('Payment cancelled');
-                        }
-                    }
-                };
-                
-                const razorpay = new Razorpay(options);
-                razorpay.open();
-                
-            } catch (error) {
-                console.error('Payment error:', error);
-                Toast.error('Payment failed. Please try again.');
-                Loading.buttonStop(payBtn);
-            }
-        });
-    },
-    
-    async verifyPayment(response, orderId) {
-        try {
-            const result = await API.verifyPayment(
-                orderId,
-                response.razorpay_payment_id,
-                response.razorpay_signature
-            );
-            
-            if (result.success) {
-                this.onPaymentSuccess({
-                    orderId: orderId,
-                    paymentId: response.razorpay_payment_id,
-                    amount: Cart.getTotal() - this.couponDiscount
-                });
-            } else {
-                throw new Error('Payment verification failed');
-            }
-        } catch (error) {
-            Toast.error('Payment verification failed. Please contact support.');
-        }
-    },
-    
-    onPaymentSuccess(data) {
-        // Update state
-        const purchasedCourse = DemoData.courses.find(c => c.id === State.cart[0]);
-        
-        // Show success page
-        document.getElementById('success-order-id').textContent = data.orderId;
-        document.getElementById('success-course-name').textContent = purchasedCourse?.title || 'Course';
-        document.getElementById('success-amount').textContent = Utils.formatPrice(data.amount);
-        document.getElementById('success-validity').textContent = purchasedCourse?.validity === 365 ? 'Lifetime' : `${purchasedCourse?.validity} days`;
-        
-        // Clear cart
-        Cart.clear();
-        
-        // Navigate to success page
-        Router.navigate('success');
-        
-        // Show confetti
-        this.showConfetti();
-        
-        // Start learning button
-        const startBtn = document.getElementById('start-learning-btn');
-        if (startBtn) {
-            startBtn.addEventListener('click', () => {
-                State.currentCourse = purchasedCourse;
-                Router.navigate('player');
+                // Update content
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(`${tabId}Tab`)?.classList.add('active');
             });
-        }
+        });
     },
     
+    // Initialize accordions
+    initAccordions() {
+        document.querySelectorAll('.faq-question, .section-header-accordion').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.faq-item, .curriculum-section');
+                item?.classList.toggle('active');
+                item?.classList.toggle('open');
+            });
+        });
+    },
+    
+    // Initialize testimonials slider
+    initTestimonialsSlider() {
+        const track = document.querySelector('.testimonials-track');
+        const cards = document.querySelectorAll('.testimonial-card');
+        const prevBtn = document.getElementById('testimonialPrev');
+        const nextBtn = document.getElementById('testimonialNext');
+        const dotsContainer = document.getElementById('testimonialDots');
+        
+        if (!track || cards.length === 0) return;
+        
+        let currentIndex = 0;
+        const totalSlides = cards.length;
+        
+        // Create dots
+        if (dotsContainer) {
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.className = `slider-dot ${i === 0 ? 'active' : ''}`;
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            }
+        }
+        
+        const updateSlider = () => {
+            const cardWidth = cards[0].offsetWidth + 24; // Including gap
+            track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+            
+            // Update dots
+            document.querySelectorAll('.slider-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        };
+        
+        const goToSlide = (index) => {
+            currentIndex = Math.max(0, Math.min(index, totalSlides - 1));
+            updateSlider();
+        };
+        
+        prevBtn?.addEventListener('click', () => goToSlide(currentIndex - 1));
+        nextBtn?.addEventListener('click', () => goToSlide(currentIndex + 1));
+        
+        // Auto-play
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider();
+        }, 5000);
+    },
+    
+    // Initialize stats counter animation
+    initStatsCounter() {
+        const counters = document.querySelectorAll('[data-count]');
+        
+        const animateCounter = (element) => {
+            const target = parseInt(element.dataset.count);
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+            
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    element.textContent = target.toLocaleString() + '+';
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 16);
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        counters.forEach(counter => observer.observe(counter));
+    },
+    
+    // Initialize scroll animations
+    initScrollAnimations() {
+        const elements = document.querySelectorAll('.reveal, .stagger');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        elements.forEach(el => observer.observe(el));
+    },
+    
+    // Show confetti
     showConfetti() {
-        const container = document.getElementById('confetti');
-        if (!container) return;
-        
         const colors = ['#6366f1', '#22d3ee', '#a855f7', '#ec4899', '#f97316'];
         
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 50; i++) {
             const confetti = document.createElement('div');
-            confetti.style.cssText = `
-                position: absolute;
-                width: ${Math.random() * 10 + 5}px;
-                height: ${Math.random() * 10 + 5}px;
-                background: ${colors[Math.floor(Math.random() * colors.length)]};
-                left: ${Math.random() * 100}%;
-                top: -20px;
-                opacity: ${Math.random()};
-                transform: rotate(${Math.random() * 360}deg);
-                animation: confetti-fall ${Math.random() * 3 + 2}s linear forwards;
-            `;
-            container.appendChild(confetti);
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 5000);
         }
-        
-        // Add animation keyframes
-        if (!document.getElementById('confetti-styles')) {
-            const style = document.createElement('style');
-            style.id = 'confetti-styles';
-            style.textContent = `
-                @keyframes confetti-fall {
-                    to {
-                        transform: translateY(100vh) rotate(720deg);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        // Clean up after animation
-        setTimeout(() => {
-            container.innerHTML = '';
-        }, 5000);
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   19. APP INITIALIZATION
-   ═══════════════════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════════════════════════════
 
-const App = {
-    async init() {
-        console.log('🎓 LearnVerse Academy - Initializing...');
+const Search = {
+    modal: null,
+    input: null,
+    results: null,
+    
+    init() {
+        this.modal = document.getElementById('searchModal');
+        this.input = document.getElementById('searchInput');
+        this.results = document.getElementById('searchResults');
         
-        // Initialize state from localStorage
-        State.init();
+        // Toggle button
+        document.getElementById('searchToggle')?.addEventListener('click', () => this.open());
         
-        // Initialize components
-        Loading.init();
-        Toast.init();
-        Modal.init();
-        UI.init();
-        Router.init();
-        
-        // Load initial data
-        await this.loadInitialData();
-        
-        // Hide loading screen
-        setTimeout(() => {
-            Loading.hide();
-        }, 1000);
-        
-        // Log logout handlers
-        document.getElementById('logout-btn')?.addEventListener('click', () => Auth.logout());
-        
-        // Cart button
-        document.getElementById('cart-btn')?.addEventListener('click', () => {
-            if (State.cart.length > 0) {
-                Router.navigate('checkout');
-            } else {
-                Toast.info('Your cart is empty');
+        // Keyboard shortcut (Cmd/Ctrl + K)
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                this.toggle();
+            }
+            
+            if (e.key === 'Escape' && this.modal?.classList.contains('show')) {
+                this.close();
             }
         });
         
-        // Update copyright year
-        const yearEl = document.getElementById('current-year');
-        if (yearEl) yearEl.textContent = new Date().getFullYear();
+        // Close on overlay click
+        this.modal?.addEventListener('click', (e) => {
+            if (e.target === this.modal) this.close();
+        });
         
-        console.log('✅ LearnVerse Academy - Ready!');
+        // Search input
+        this.input?.addEventListener('input', Utils.debounce((e) => {
+            this.search(e.target.value);
+        }, 300));
     },
     
-    async loadInitialData() {
-        try {
-            // Load courses
-            const result = await API.getCourses();
-            if (result.success) {
-                State.courses = result.courses;
-            }
-            
-            // Load enrollments if logged in
-            if (State.isAuthenticated) {
-                await Auth.loadEnrollments();
-            }
-        } catch (error) {
-            console.error('Failed to load initial data:', error);
+    open() {
+        this.modal?.classList.add('show');
+        this.input?.focus();
+    },
+    
+    close() {
+        this.modal?.classList.remove('show');
+        if (this.input) this.input.value = '';
+        if (this.results) this.results.innerHTML = '<div class="search-empty"><p>Start typing to search...</p></div>';
+    },
+    
+    toggle() {
+        if (this.modal?.classList.contains('show')) {
+            this.close();
+        } else {
+            this.open();
+        }
+    },
+    
+    async search(query) {
+        if (!query.trim()) {
+            this.results.innerHTML = '<div class="search-empty"><p>Start typing to search...</p></div>';
+            return;
+        }
+        
+        const result = await API.searchCourses(query);
+        
+        if (result.success && result.data.length > 0) {
+            this.results.innerHTML = result.data.map(course => `
+                <div class="search-result-item" onclick="Search.close(); Router.navigate('/course/${course.slug}')">
+                    <div style="width: 60px; height: 40px; background: var(--gradient-primary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">📚</div>
+                    <div class="search-result-info">
+                        <h4>${Utils.escapeHtml(course.title)}</h4>
+                        <span>${Utils.escapeHtml(course.instructor)} • ${course.category}</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            this.results.innerHTML = '<div class="search-empty"><p>No courses found</p></div>';
         }
     }
 };
 
-// Start the app when DOM is ready
+// ═══════════════════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════════════════════════════
+
 document.addEventListener('DOMContentLoaded', () => {
-    App.init();
+    // Initialize theme
+    UI.initTheme();
+    
+    // Initialize router
+    Router.init();
+    
+    // Initialize auth UI
+    Auth.updateUI();
+    
+    // Initialize search
+    Search.init();
+    
+    // Initialize modal
+    Modal.init();
+    
+    // Initialize toast
+    Toast.init();
+    
+    // Theme toggle
+    document.getElementById('themeToggle')?.addEventListener('click', () => UI.toggleTheme());
+    
+    // Mobile menu toggle
+    const navToggle = document.getElementById('navToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    navToggle?.addEventListener('click', () => {
+        navToggle.classList.toggle('active');
+        mobileMenu?.classList.toggle('show');
+    });
+    
+    // Navbar scroll effect
+    window.addEventListener('scroll', Utils.throttle(() => {
+        const navbar = document.getElementById('navbar');
+        if (navbar) {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        }
+        
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        if (backToTop) {
+            backToTop.classList.toggle('show', window.scrollY > 500);
+        }
+    }, 100));
+    
+    // Back to top button
+    document.getElementById('backToTop')?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    // Logout button
+    document.getElementById('logoutBtn')?.addEventListener('click', () => Auth.logout());
+    
+    // Hide page loader
+    setTimeout(() => {
+        document.getElementById('pageLoader')?.classList.add('hidden');
+    }, 500);
+    
+    console.log('🎓 LearnVerse Academy initialized!');
+    console.log('Demo Mode:', CONFIG.DEMO_MODE);
 });
 
-// Handle page visibility changes (pause video when tab is hidden)
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden && State.currentPage === 'player') {
-        // Could pause video here if using YouTube API
-    }
-});
+// ═══════════════════════════════════════════════════════════════════════════════
+// EXPOSE GLOBAL FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
 
-// Handle before unload (warn if there's unsaved data)
-window.addEventListener('beforeunload', (e) => {
-    if (State.currentPage === 'checkout' && State.cart.length > 0) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-});
-
-// Export for debugging
-window.LearnVerse = {
-    State,
-    Config: CONFIG,
-    API,
-    Auth,
-    Cart,
-    Router,
-    Utils,
-    DemoData
-
-};
-
-
-
-
-
+window.Router = Router;
+window.Auth = Auth;
+window.Toast = Toast;
+window.Modal = Modal;
+window.Wishlist = Wishlist;
+window.Search = Search;
